@@ -1,41 +1,51 @@
 <!doctype html>
 <html lang="en">
-<head> 
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>States Flashcards</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f4f6fb; }
-    header { padding: 16px; background: white; box-shadow: 0 1px 10px rgba(0,0,0,.06); }
-    h1 { margin: 0; font-size: 18px; }
-    main { padding: 16px; display: grid; gap: 12px; }
-    a {
-      display: block;
-      padding: 14px 16px;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      text-decoration: none;
-      color: #111;
-      font-weight: 800;
+    :root { --bg:#f4f6fb; --card:#fff; --text:#111; --muted:#5b6472; --shadow:0 10px 24px rgba(0,0,0,.10); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:16px; background:#fff; box-shadow:0 1px 10px rgba(0,0,0,.06); }
+    h1 { margin:0; font-size:18px; }
+    .wrap { max-width:920px; margin:0 auto; padding:16px; }
+    .grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); }
+    a.card {
+      display:block; padding:18px; background:var(--card); border-radius:16px; box-shadow:var(--shadow);
+      text-decoration:none; color:inherit; transition:transform .05s ease-in-out;
     }
-    .sub { display:block; font-weight: 600; opacity: .7; margin-top: 4px; }
+    a.card:active { transform:scale(.99); }
+    .title { font-size:18px; font-weight:800; margin:0 0 6px; }
+    .sub { margin:0; color:var(--muted); line-height:1.3; font-size:14px; }
+    .pill { display:inline-block; margin-top:10px; font-size:12px; padding:6px 10px; border-radius:999px; background:#eef2ff; color:#28327a; font-weight:700; }
+    .note { margin-top:14px; color:var(--muted); font-size:13px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>States Flashcards</h1>
+    <div class="wrap">
+      <h1>States Flashcards</h1>
+    </div>
   </header>
 
-  <main>
-     <a href="./week1/">
-    Week 1
-    <span class="sub">ME • NH • VT • CT • RI • MA</span>
-  </a>
-    <a href="./week2/">
-      Week 2
-      <span class="sub">PA • NJ • NY • DE</span>
-    </a>
+  <main class="wrap">
+    <div class="grid">
+      <a class="card" href="./week1/">
+        <p class="title">Week 1</p>
+        <p class="sub">Study the states, then check your learning.</p>
+        <span class="pill">Open Week 1</span>
+      </a>
+
+      <a class="card" href="./week2/">
+        <p class="title">Week 2</p>
+        <p class="sub">Study the states, then check your learning.</p>
+        <span class="pill">Open Week 2</span>
+      </a>
+    </div>
+
+    <p class="note">Tip: Bookmark this page. Each week keeps its own study + check-your-learning flow.</p>
   </main>
 </body>
 </html>
