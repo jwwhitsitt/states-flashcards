@@ -1,146 +1,106 @@
-<!-- redeploy -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Week 2 – States</title>
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f4f6fb; }
-    header { padding: 14px 16px; background: white; box-shadow: 0 1px 10px rgba(0,0,0,.06); }
-    h1 { margin: 0; font-size: 16px; }
+  <title>Week 2</title>
 
-    .wrap { padding: 16px; display: grid; gap: 12px; justify-items: center; }
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, Arial, sans-serif;
+      background: #f4f6fb;
+    }
+
+    header {
+      padding: 18px 16px;
+      background: white;
+      box-shadow: 0 1px 10px rgba(0,0,0,.06);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    main {
+      height: calc(100vh - 72px);
+      display: grid;
+      grid-template-rows: 1fr auto auto auto;
+      gap: 14px;
+      padding: 16px;
+      justify-items: center;
+    }
 
     .card {
       width: min(92vw, 420px);
-      aspect-ratio: 3 / 4;
-      perspective: 1200px;
-    }
-
-    .inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 280ms ease;
-      border-radius: 18px;
-    }
-
-    .flipped .inner { transform: rotateY(180deg); }
-
-    .face {
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-      border-radius: 18px;
-      overflow: hidden;
       background: white;
+      border-radius: 18px;
+      padding: 20px 16px;
       box-shadow: 0 12px 30px rgba(0,0,0,.14);
-    }
-
-    .face img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: white;
-    }
-
-    .back { transform: rotateY(180deg); }
-
-    .controls {
-      width: min(92vw, 420px);
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 14px;
+      opacity: .75;
+      line-height: 1.4;
     }
 
     button {
-      padding: 12px;
+      width: min(92vw, 420px);
+      padding: 16px;
       border: 0;
-      border-radius: 12px;
+      border-radius: 16px;
       background: white;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      font-weight: 800;
+      font-weight: 900;
+      font-size: 16px;
       cursor: pointer;
     }
 
-    .meta {
-      width: min(92vw, 420px);
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
+    .secondary {
+      background: transparent;
+      box-shadow: none;
       opacity: .7;
+      font-weight: 700;
     }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>Week 2 – States</h1>
+    <h1>Week 2</h1>
   </header>
 
-  <div class="wrap">
-    <div class="meta">
-      <div></div>
-      <div id="count"></div>
+  <main>
+    <div></div>
+
+    <div class="card">
+      <h2>Study Flashcards</h2>
+      <p>Review the states as many times as you want before checking your learning.</p>
     </div>
 
-    <div class="card" id="card">
-      <div class="inner">
-        <div class="face front">
-          <img id="frontImg" alt="Front of card">
-        </div>
-        <div class="face back">
-          <img id="backImg" alt="Back of card">
-        </div>
-      </div>
-    </div>
+    <button onclick="location.href='./flashcards.html'">
+      Study Flashcards
+    </button>
 
-    <div class="controls">
-      <button id="prev">Prev</button>
-      <button id="flip">Flip</button>
-      <button id="next">Next</button>
-    </div>
-  </div>
-<div class="controls" style="margin-top:10px;">
-  <button onclick="location.href='./quiz1.html'">Quiz 1: Spelling</button>
-  <button onclick="location.href='./quiz2.html'">Quiz 2: Capitals</button>
-  <button onclick="location.href='./quiz3.html'">Quiz 3: Map → Abbrev</button>
-</div>
+    <button onclick="location.href='./test.html'">
+      Check Your Learning
+    </button>
 
-<div class="controls" style="margin-top:10px;">
-  <button onclick="location.href='../'">Home</button>
-  <button onclick="location.reload()">Restart</button>
-</div>
-
-  <script>
-    const cards = [
-      { name: "Pennsylvania", code: "pa" },
-      { name: "New Jersey", code: "nj" },
-      { name: "New York", code: "ny" },
-      { name: "Delaware", code: "de" }
-    ];
-
-    let i = 0;
-    const card = document.getElementById("card");
-    const frontImg = document.getElementById("frontImg");
-    const backImg = document.getElementById("backImg");
-    const count = document.getElementById("count");
-
-    function render() {
-      const c = cards[i];
-      count.textContent = `${i + 1} / ${cards.length}`;
-      frontImg.src = `./images/${c.code}-f.png`;
-      backImg.src = `./images/${c.code}-b.png`;
-      card.classList.remove("flipped");
-    }
-
-    document.getElementById("flip").onclick = () => card.classList.toggle("flipped");
-    document.getElementById("next").onclick = () => { i = (i + 1) % cards.length; render(); };
-    document.getElementById("prev").onclick = () => { i = (i - 1 + cards.length) % cards.length; render(); };
-    card.onclick = () => card.classList.toggle("flipped");
-
-    render();
-  </script>
+    <button class="secondary" onclick="location.href='../'">
+      ← Back to Lessons
+    </button>
+  </main>
 </body>
 </html>
