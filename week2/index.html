@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Week 2 – States</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f4f6fb; }
+    header { padding: 14px 16px; background: white; box-shadow: 0 1px 10px rgba(0,0,0,.06); }
+    h1 { margin: 0; font-size: 16px; }
+
+    .wrap { padding: 16px; display: grid; gap: 12px; justify-items: center; }
+
+    .card {
+      width: min(92vw, 420px);
+      aspect-ratio: 3 / 4;
+      perspective: 1200px;
+    }
+
+    .inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 280ms ease;
+      border-radius: 18px;
+    }
+
+    .flipped .inner { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 12px 30px rgba(0,0,0,.14);
+    }
+
+    .face img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: white;
+    }
+
+    .back { transform: rotateY(180deg); }
+
+    .controls {
+      width: min(92vw, 420px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .meta {
+      width: min(92vw, 420px);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      opacity: .7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Week 2 – States</h1>
+  </header>
+
+  <div class="wrap">
+    <div class="meta">
+      <div id="stateName"></div>
+      <div id="count"></div>
+    </div>
+
+    <div class="card" id="card">
+      <div class="inner">
+        <div class="face front">
+          <img id="frontImg" alt="Front of card">
+        </div>
+        <div class="face back">
+          <img id="backImg" alt="Back of card">
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prev">Prev</button>
+      <button id="flip">Flip</button>
+      <button id="next">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const cards = [
+      { name: "Pennsylvania", code: "pa" },
+      { name: "New Jersey", code: "nj" },
+      { name: "New York", code: "ny" },
+      { name: "Delaware", code: "de" }
+    ];
+
+    let i = 0;
+    const card = document.getElementById("card");
+    const frontImg = document.getElementById("frontImg");
+    const backImg = document.getElementById("backImg");
+    const stateName = document.getElementById("stateName");
+    const count = document.getElementById("count");
+
+    function render() {
+      const c = cards[i];
+      stateName.textContent = c.name;
+      count.textContent = `${i + 1} / ${cards.length}`;
+      frontImg.src = `./images/${c.code}-f.png`;
+      backImg.src = `./images/${c.code}-b.png`;
+      card.classList.remove("flipped");
+    }
+
+    document.getElementById("flip").onclick = () => card.classList.toggle("flipped");
+    document.getElementById("next").onclick = () => { i = (i + 1) % cards.length; render(); };
+    document.getElementById("prev").onclick = () => { i = (i - 1 + cards.length) % cards.length; render(); };
+    card.onclick = () => card.classList.toggle("flipped");
+
+    render();
+  </script>
+</body>
+</html>
