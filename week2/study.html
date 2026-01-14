@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Week 2 – Study</title>
+  <title>Week 2 – Study Flashcards</title>
 
   <style>
     :root{
@@ -12,10 +12,11 @@
       --text:#0f172a;
       --muted:#475569;
       --shadow:0 10px 30px rgba(15,23,42,.12);
-      --radius:22px;
-      --btn:#0f172a;
-      --btnText:#ffffff;
+      --radius:18px;
       --link:#1d4ed8;
+      --btn:#0f172a;
+      --btn2:#e5e7eb;
+      --btn2text:#111827;
     }
     *{box-sizing:border-box}
     body{
@@ -33,80 +34,138 @@
       background:#fff;
       box-shadow:0 1px 10px rgba(0,0,0,.06);
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      gap:10px;
     }
     header a{
       text-decoration:none;
       color:var(--link);
-      font-weight:700;
+      font-weight:900;
+      white-space:nowrap;
     }
     header h1{
-      font-size:18px;
       margin:0;
-      font-weight:800;
+      font-size:16px;
+      font-weight:1000;
+      text-align:center;
+      flex:1;
     }
+    header .spacer{ width:52px; }
 
     main{
       flex:1;
       display:flex;
-      align-items:center;
       justify-content:center;
-      padding:16px;
+      align-items:center;
+      padding:14px;
+      overflow:hidden; /* enforce no-scroll */
+    }
+
+    .wrap{
+      width:100%;
+      max-width:720px;
+      min-height:0;
     }
 
     .card{
-      width:100%;
-      max-width:520px;
       background:var(--card);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding:28px 22px;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:calc(100vh - 62px - 28px); /* header + padding */
+      max-height:720px; /* keeps it tidy on desktop too */
+    }
+
+    .frame{
+      flex:1;
+      min-height:0;
+      border-radius:16px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+      padding:12px;
+      overflow:hidden;
+    }
+
+    img{
+      width:100%;
+      height:100%;
+      max-height:100%;
+      object-fit:contain;
+      border-radius:12px;
+    }
+
+    .backside{
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
       text-align:center;
+      padding:10px;
+      gap:8px;
     }
-
-    .state-name{
+    .state{
       font-size:36px;
-      font-weight:900;
-      margin:0 0 6px;
+      font-weight:1000;
+      line-height:1.05;
     }
-
     .abbr{
       font-size:22px;
+      font-weight:900;
       color:var(--muted);
-      margin-bottom:20px;
+      letter-spacing:.08em;
+    }
+    .hint{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
     }
 
-    .controls{
+    .nav{
       display:flex;
-      gap:12px;
+      gap:10px;
+      align-items:center;
     }
-
-    button{
+    .btn{
       flex:1;
-      padding:16px;
-      font-size:18px;
-      font-weight:800;
-      border-radius:16px;
-      border:none;
+      padding:12px 14px;
+      border-radius:14px;
+      border:0;
+      font-size:16px;
+      font-weight:1000;
       cursor:pointer;
-    }
-
-    .prev{
-      background:#e5e7eb;
-      color:#111827;
-    }
-
-    .next{
       background:var(--btn);
-      color:var(--btnText);
+      color:#fff;
+      box-shadow:0 10px 20px rgba(0,0,0,.10);
+    }
+    .btn.secondary{
+      background:var(--btn2);
+      color:var(--btn2text);
+      box-shadow:none;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
     }
 
-    .counter{
-      margin-top:14px;
-      font-size:14px;
+    .meta{
+      text-align:center;
+      font-weight:900;
       color:var(--muted);
-      font-weight:600;
+      font-size:14px;
+    }
+
+    @media (max-width:480px){
+      .state{ font-size:32px; }
+      .abbr{ font-size:20px; }
     }
   </style>
 </head>
@@ -115,48 +174,91 @@
   <header>
     <a href="./index.html">← Back</a>
     <h1>Study Flashcards</h1>
-    <span></span>
+    <div class="spacer"></div>
   </header>
 
   <main>
-    <div class="card">
-      <div class="state-name" id="stateName"></div>
-      <div class="abbr" id="stateAbbr"></div>
+    <div class="wrap">
+      <section class="card" aria-label="Flashcard">
+        <div class="frame" id="frame"></div>
 
-      <div class="controls">
-        <button class="prev" onclick="prevCard()">Back</button>
-        <button class="next" onclick="nextCard()">Next</button>
-      </div>
+        <div class="nav">
+          <button class="btn secondary" id="prevBtn">Back</button>
+          <button class="btn secondary" id="flipBtn">Flip</button>
+          <button class="btn" id="nextBtn">Next</button>
+        </div>
 
-      <div class="counter" id="counter"></div>
+        <div class="meta" id="meta">Card 1 of 4</div>
+      </section>
     </div>
   </main>
 
   <script>
-    const cards = [
-      { name: "Pennsylvania", abbr: "PA" },
-      { name: "New Jersey", abbr: "NJ" },
-      { name: "Delaware", abbr: "DE" }
+    // Week 2 set (4 states)
+    const CARDS = [
+      { state:"Pennsylvania", abbrev:"PA", img:"./images/pa-f.png" },
+      { state:"New Jersey",   abbrev:"NJ", img:"./images/nj-f.png" },
+      { state:"New York",     abbrev:"NY", img:"./images/ny-f.png" },
+      { state:"Delaware",     abbrev:"DE", img:"./images/de-f.png" }
     ];
 
-    let index = 0;
+    const frame = document.getElementById("frame");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const flipBtn = document.getElementById("flipBtn");
+    const meta = document.getElementById("meta");
+
+    let i = 0;
+    let showingFront = true;
 
     function render(){
-      document.getElementById("stateName").textContent = cards[index].name;
-      document.getElementById("stateAbbr").textContent = cards[index].abbr;
-      document.getElementById("counter").textContent =
-        `Card ${index + 1} of ${cards.length}`;
+      const c = CARDS[i];
+
+      // buttons
+      prevBtn.disabled = (i === 0);
+      nextBtn.disabled = (i === CARDS.length - 1);
+
+      // meta
+      meta.textContent = `Card ${i+1} of ${CARDS.length}`;
+
+      // content
+      frame.innerHTML = "";
+      if(showingFront){
+        const img = document.createElement("img");
+        img.src = c.img;
+        img.alt = c.state;
+        frame.appendChild(img);
+        flipBtn.textContent = "Flip";
+      } else {
+        const back = document.createElement("div");
+        back.className = "backside";
+        back.innerHTML = `
+          <div class="state">${c.state}</div>
+          <div class="abbr">${c.abbrev}</div>
+          <div class="hint">Tap Flip to see the map again</div>
+        `;
+        frame.appendChild(back);
+        flipBtn.textContent = "Flip";
+      }
     }
 
-    function nextCard(){
-      index = (index + 1) % cards.length;
+    function flip(){
+      showingFront = !showingFront;
       render();
     }
 
-    function prevCard(){
-      index = (index - 1 + cards.length) % cards.length;
-      render();
-    }
+    prevBtn.addEventListener("click", ()=>{
+      if(i>0){ i--; showingFront = true; render(); }
+    });
+
+    nextBtn.addEventListener("click", ()=>{
+      if(i<CARDS.length-1){ i++; showingFront = true; render(); }
+    });
+
+    flipBtn.addEventListener("click", flip);
+
+    // tap anywhere on the card to flip (kid-friendly)
+    frame.addEventListener("click", flip);
 
     render();
   </script>
