@@ -127,20 +127,22 @@
       overflow:hidden;
     }
 
-    /* Image area: base + spelling boost */
     .imgbox{
       border-radius:16px;
       background:#fff;
-      display:none; /* hidden unless needed */
+      display:none;
       align-items:center;
       justify-content:center;
       padding:10px;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-      height:200px;
+      height:190px; /* base */
       overflow:hidden;
     }
     .imgbox.show{ display:flex; }
-    .imgbox.spelling{ height:270px; } /* bigger only for spelling */
+
+    /* Spelling: slightly smaller than what you had (to fit 4 answers) */
+    .imgbox.spelling{ height:230px; }
+
     .imgbox img{
       width:100%;
       height:100%;
@@ -149,7 +151,7 @@
     }
 
     .qtitle{
-      font-size:30px;
+      font-size:28px; /* slightly reduced */
       font-weight:1000;
       line-height:1.05;
       margin-top:2px;
@@ -158,6 +160,7 @@
       color:var(--muted);
       font-weight:800;
       margin-bottom:2px;
+      font-size:16px;
     }
 
     .answers{
@@ -173,8 +176,8 @@
       border-radius:16px;
       border:2px solid #e5e7eb;
       background:#fff;
-      padding:12px 14px;           /* slightly smaller to prevent scroll */
-      font-size:19px;              /* slightly smaller to prevent scroll */
+      padding:11px 14px; /* slightly smaller */
+      font-size:18px;     /* slightly smaller */
       font-weight:1000;
       text-align:left;
       cursor:pointer;
@@ -264,7 +267,6 @@
 
   <main>
     <div class="wrap">
-
       <div class="toprow">
         <div class="pill" id="sectionPill">Spelling</div>
         <div class="barwrap" aria-label="Progress">
@@ -301,7 +303,6 @@
       { state:"Delaware",     abbrev:"DE", capital:"Dover",      img:"./images/de-f.png" }
     ];
 
-    // Abbrev pool
     const ABBREV_POOL = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
                          "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
                          "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
@@ -314,7 +315,6 @@
       }
       return a;
     }
-
     function pickDistinct(pool, count, excludeSet){
       const out = [];
       const p = shuffle(pool).filter(x => !excludeSet.has(x));
@@ -325,26 +325,64 @@
       return out;
     }
 
-    // spelling "sounds right" fake options
+    // spelling "sounds right" fakes
     const SPELLING_FAKES = {
-      "Pennsylvania":["Pencilvainya","Pensylvainia","Penzylvania","Pennsilvanya","Pencilvainia"],
-      "New Jersey":["New Jerzee","New Jersy","New Jersie","New Jersei","New Jerzey"],
-      "New York":["New Yorc","Nu York","New Yark","New Yorq","New Yorrk"],
-      "Delaware":["Della-ware","Delawair","Delawere","Delawaree","Dellaweir"]
+      "Pennsylvania":["Pencilvainya","Pensylvainia","Penzylvania","Pennsilvanya","Pencilvainia","Pensilvanya"],
+      "New Jersey":["New Jerzee","New Jersy","New Jersie","New Jersei","New Jerzey","New Jersee"],
+      "New York":["New Yorc","Nu York","New Yark","New Yorq","New Yorrk","New Yurk"],
+      "Delaware":["Della-ware","Delawair","Delawere","Delawaree","Dellaweir","Delawar"]
     };
 
-    // ====== Build 3-part test (12 questions: 4+4+4) ======
-    // Part 1: Spelling (shows image, NO state name as title)
-    // Rule: all 4 choices are trying to spell the SAME state name
+    // backup generator (in case fakes list is short)
+    function genMisspellings(word, need){
+      const out = [];
+      const w = word;
+
+      // a few safe, kid-friendly mutation patterns
+      const swaps = [
+        s => s.replace(/ia\b/i,"ya"),
+        s => s.replace(/syl/i,"sil"),
+        s => s.replace(/ss/i,"s"),
+        s => s.replace(/y/i,"i"),
+        s => s.replace(/e/i,"ei"),
+        s => s.replace(/er/i,"ar"),
+        s => s.replace(/a/i,"e"),
+        s => s.replace(/o/i,"u"),
+        s => s + s.slice(-1),         // double last letter
+        s => s.replace(/ /g,"")        // remove space (NewYork)
+      ];
+
+      for(const fn of swaps){
+        const v = fn(w);
+        if(v && v !== w && !out.includes(v)) out.push(v);
+        if(out.length >= need) break;
+      }
+
+      // If still short, add a couple ultra-simple variants
+      while(out.length < need){
+        out.push(w.replace(/a/i,"aa"));
+        if(out.length >= need) break;
+        out.push(w.replace(/e/i,"ee"));
+      }
+
+      // de-dupe
+      return Array.from(new Set(out)).slice(0, need);
+    }
+
+    // ====== Build questions ======
+
+    // Part 1: Spelling (image + ALWAYS 4 options, ALWAYS includes correct)
     const spellingQuestions = WEEK.map(s => {
       const correct = s.state;
-      const fakes = shuffle(SPELLING_FAKES[correct] || []).slice(0, 3);
-      const choices = shuffle([correct, ...fakes]).slice(0, 4);
 
-      // Ensure correct is present even if fakes list was short
-      if(!choices.includes(correct)){
-        choices[Math.floor(Math.random()*choices.length)] = correct;
+      let fakes = shuffle(SPELLING_FAKES[correct] || []);
+      if(fakes.length < 3){
+        const extra = genMisspellings(correct, 3 - fakes.length);
+        fakes = fakes.concat(extra);
       }
+      fakes = Array.from(new Set(fakes)).filter(x => x !== correct);
+
+      const choices = shuffle([correct, ...fakes.slice(0,3)]); // EXACTLY 4
 
       return {
         section:"Spelling",
@@ -354,11 +392,11 @@
         subtitle:"Which one is spelled correctly?",
         correct,
         choices,
-        reviewLabel: `Spelling: ${correct}`
+        reviewLabel:`Spelling: ${correct}`
       };
     });
 
-    // Part 2: Capitals (NO image)
+    // Part 2: Capitals (NO image, 4 options from THIS week only)
     const capitalQuestions = WEEK.map(s => {
       const correctState = s.state;
       const wrongStates = pickDistinct(WEEK.map(x=>x.state), 3, new Set([correctState]));
@@ -372,11 +410,11 @@
         subtitle:"Which state has this capital?",
         correct: correctState,
         choices,
-        reviewLabel: `Capitals: ${s.capital} → ${correctState}`
+        reviewLabel:`Capitals: ${s.capital} → ${correctState}`
       };
     });
 
-    // Part 3: Abbreviations (NO image)
+    // Part 3: Abbreviations (NO image, 4 options)
     const abbrevQuestions = WEEK.map(s => {
       const correct = s.abbrev;
       const wrongs = pickDistinct(ABBREV_POOL, 3, new Set([correct]));
@@ -390,7 +428,7 @@
         subtitle:"Which abbreviation matches this state?",
         correct,
         choices,
-        reviewLabel: `Abbreviations: ${s.state} → ${s.abbrev}`
+        reviewLabel:`Abbreviations: ${s.state} → ${s.abbrev}`
       };
     });
 
@@ -415,7 +453,7 @@
     let idx = 0;
     let locked = false;
 
-    const results = []; // {q, chosen, correct}
+    const results = [];
     const missed = new Set();
 
     function setProgress(){
@@ -437,10 +475,9 @@
       const q = QUESTIONS[idx];
       setProgress();
 
-      // Image rules
       if(q.showImage && q.img){
         imgbox.classList.add("show");
-        imgbox.classList.toggle("spelling", q.section === "Spelling"); // BIGGER for spelling only
+        imgbox.classList.toggle("spelling", q.section === "Spelling");
         img.src = q.img;
         img.alt = "State flashcard";
       } else {
@@ -463,7 +500,6 @@
         answersEl.appendChild(b);
       });
 
-      // button label
       nextBtn.textContent = (idx === QUESTIONS.length - 1) ? "Finish" : "Next";
     }
 
@@ -474,7 +510,6 @@
       const q = QUESTIONS[idx];
       const isCorrect = (choice === q.correct);
 
-      // mark buttons
       const btns = Array.from(document.querySelectorAll(".choice"));
       btns.forEach(b => {
         if(b.textContent === q.correct) b.classList.add("correct");
@@ -498,7 +533,6 @@
       const correctCount = results.filter(r => r.chosen === r.correct).length;
       const pct = Math.round((correctCount / total) * 100);
 
-      // Replace content with summary
       imgbox.classList.remove("show");
       imgbox.classList.remove("spelling");
       answersEl.innerHTML = "";
