@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Week 2 – Study</title>
+
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --shadow:0 10px 30px rgba(15,23,42,.12);
+      --radius:22px;
+      --btn:#0f172a;
+      --btnText:#ffffff;
+      --link:#1d4ed8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    header{
+      padding:10px 14px;
+      background:#fff;
+      box-shadow:0 1px 10px rgba(0,0,0,.06);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header a{
+      text-decoration:none;
+      color:var(--link);
+      font-weight:700;
+    }
+    header h1{
+      font-size:18px;
+      margin:0;
+      font-weight:800;
+    }
+
+    main{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+
+    .card{
+      width:100%;
+      max-width:520px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:28px 22px;
+      text-align:center;
+    }
+
+    .state-name{
+      font-size:36px;
+      font-weight:900;
+      margin:0 0 6px;
+    }
+
+    .abbr{
+      font-size:22px;
+      color:var(--muted);
+      margin-bottom:20px;
+    }
+
+    .controls{
+      display:flex;
+      gap:12px;
+    }
+
+    button{
+      flex:1;
+      padding:16px;
+      font-size:18px;
+      font-weight:800;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+    }
+
+    .prev{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .next{
+      background:var(--btn);
+      color:var(--btnText);
+    }
+
+    .counter{
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="./index.html">← Back</a>
+    <h1>Study Flashcards</h1>
+    <span></span>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="state-name" id="stateName"></div>
+      <div class="abbr" id="stateAbbr"></div>
+
+      <div class="controls">
+        <button class="prev" onclick="prevCard()">Back</button>
+        <button class="next" onclick="nextCard()">Next</button>
+      </div>
+
+      <div class="counter" id="counter"></div>
+    </div>
+  </main>
+
+  <script>
+    const cards = [
+      { name: "Pennsylvania", abbr: "PA" },
+      { name: "New Jersey", abbr: "NJ" },
+      { name: "Delaware", abbr: "DE" }
+    ];
+
+    let index = 0;
+
+    function render(){
+      document.getElementById("stateName").textContent = cards[index].name;
+      document.getElementById("stateAbbr").textContent = cards[index].abbr;
+      document.getElementById("counter").textContent =
+        `Card ${index + 1} of ${cards.length}`;
+    }
+
+    function nextCard(){
+      index = (index + 1) % cards.length;
+      render();
+    }
+
+    function prevCard(){
+      index = (index - 1 + cards.length) % cards.length;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
