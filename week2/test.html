@@ -9,6 +9,10 @@
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-neutral.png">
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-squint.png">
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-celebrate.png">
+  <link rel="preload" as="image" href="/mascots/kitimus/kitimus-blink.png">
+  <link rel="preload" as="image" href="/mascots/kitimus/kitimus-squint-left.png">
+  <link rel="preload" as="image" href="/mascots/kitimus/kitimus-squint-right.png">
+
 
   <style>
     :root{
@@ -429,11 +433,12 @@
           <div class="tileGrid" id="tileGrid"></div>
         </div>
 
-        <div class="bottom" id="bottomBtns">
-          <button class="btn secondary" id="exitBtn">Exit</button>
-          <button class="btn secondary" id="clearBtn" style="display:none;">Clear</button>
-          <button class="btn" id="checkBtn" style="display:none;">Check</button>
-        </div>
+        <div class="bottom" id="bottomBtns" style="display:none;">
+  <button class="btn secondary" id="backspaceBtn" style="display:none;">Backspace</button>
+  <button class="btn secondary" id="clearBtn" style="display:none;">Clear</button>
+  <button class="btn" id="checkBtn" style="display:none;">Check</button>
+</div>
+
 
         <div class="result" id="result"></div>
         <div id="reviewBox" style="display:none;"></div>
@@ -442,6 +447,22 @@
   </main>
 
   <script>
+    // ===== DEBUG: show JS errors on the page (remove after fixed) =====
+(function(){
+  const box = document.createElement("div");
+  box.id = "errBox";
+  box.style.cssText = "position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#111827;color:#fff;padding:10px 12px;border-radius:10px;font:12px/1.3 system-ui;white-space:pre-wrap;max-height:40vh;overflow:auto;display:none;";
+  document.addEventListener("DOMContentLoaded", () => document.body.appendChild(box));
+  window.addEventListener("error", (e) => {
+    box.style.display = "block";
+    box.textContent =
+      "JS ERROR:\n" +
+      (e.message || "unknown") + "\n\n" +
+      (e.filename ? e.filename.split("/").pop() : "") + ":" + (e.lineno || "") + ":" + (e.colno || "") + "\n\n" +
+      (e.error && e.error.stack ? e.error.stack : "");
+  });
+})();
+
     // =========================================================
     // Version: Week2 Test - Option 1 (single file, modular renderers)
     // =========================================================
@@ -546,30 +567,72 @@
     const resultEl = document.getElementById("result");
     const reviewBox = document.getElementById("reviewBox");
 
-    const exitBtn = document.getElementById("exitBtn");
+    const bottomBtns = document.getElementById("bottomBtns");
+    const backspaceBtn = document.getElementById("backspaceBtn");
     const clearBtn = document.getElementById("clearBtn");
     const checkBtn = document.getElementById("checkBtn");
 
     /* ============================
        Kitimus state machine (minimal)
        ============================ */
-    const kitimusImg = document.getElementById("kitimusImg");
-    const KITIMUS = {
-      neutral: "/mascots/kitimus/kitimus-neutral.png",
-      squint: "/mascots/kitimus/kitimus-squint.png",
-      celebrate: "/mascots/kitimus/kitimus-celebrate.png"
-    };
-    function setKitimus(state){
-      if(!kitimusImg) return;
-      const src = KITIMUS[state] || KITIMUS.neutral;
-      if(kitimusImg.getAttribute("src") !== src){
-        kitimusImg.setAttribute("src", src);
-      }
+  const kitimusImg = document.getElementById("kitimusImg");
+const KITIMUS = {
+  neutral: "/mascots/kitimus/kitimus-neutral.png",
+  squint: "/mascots/kitimus/kitimus-squint.png",
+  squintLeft: "/mascots/kitimus/kitimus-squint-left.png",
+  squintRight: "/mascots/kitimus/kitimus-squint-right.png",
+  blink: "/mascots/kitimus/kitimus-blink.png",
+  celebrate: "/mascots/kitimus/kitimus-celebrate.png"
+};
+
+function setKitimus(state){
+  if(!kitimusImg) return;
+  const src = KITIMUS[state] || KITIMUS.neutral;
+  if(kitimusImg.getAttribute("src") !== src){
+    kitimusImg.setAttribute("src", src);
+  }
+}
+
+let kitimusIdleTimer = null;
+
+function stopKitimusIdle(){
+  if(kitimusIdleTimer){
+    clearInterval(kitimusIdleTimer);
+    kitimusIdleTimer = null;
+  }
+}
+
+function startKitimusIdle(){
+  stopKitimusIdle();
+  setKitimus("squint");
+
+  kitimusIdleTimer = setInterval(() => {
+    if(locked) return;
+
+    const r = Math.random();
+
+    if(r < 0.22){
+      setKitimus("blink");
+      setTimeout(() => setKitimus("squint"), 140);
+      return;
     }
-    function kitimusWrongPulse(){
-      // small intentional delay, then brief squint, then back to neutral on next render/advance
-      setTimeout(() => setKitimus("squint"), 200);
+
+    if(r < 0.55){
+      const dir = (Math.random() < 0.5) ? "squintLeft" : "squintRight";
+      setKitimus(dir);
+      setTimeout(() => setKitimus("squint"), 220);
+      return;
     }
+
+    setKitimus("squint");
+  }, 2200);
+}
+
+function kitimusWrongPulse(){
+  // wrong answer reaction: briefly neutral, then back to squint
+  setTimeout(() => setKitimus("neutral"), 150);
+  setTimeout(() => setKitimus("squint"), 650);
+}
 
     let idx = 0;
     let locked = false;
@@ -596,7 +659,7 @@
       reviewBox.innerHTML = "";
 
       // mascot default (neutral most of the time)
-      setKitimus("neutral");
+      setKitimus("squint");
 
       // image
       if(q.showImage && q.img){
@@ -617,6 +680,11 @@
       capWrap.classList.remove("show");
       clearBtn.style.display = "none";
       checkBtn.style.display = "none";
+      
+      // default: no bottom buttons unless tiles section
+      bottomBtns.style.display = "none";
+      backspaceBtn.style.display = "none";
+
     }
 
     // =========================================================
@@ -674,6 +742,7 @@
         targetWords: words,
         targetLetters: letters,
         filled: new Array(letters.length).fill(""),
+        filledTileIndex: new Array(letters.length).fill(-1),
         tiles,
         used: new Array(tiles.length).fill(false)
       };
@@ -728,6 +797,7 @@
           if(next === -1) return;
 
           ts.filled[next] = t.ch;
+          ts.filledTileIndex[next] = index;
           ts.used[index] = true;
 
           renderSlotsFromState(ts);
@@ -740,6 +810,8 @@
 
     function renderTilesQuestion(q){
       capWrap.classList.add("show");
+      bottomBtns.style.display = "flex";
+      backspaceBtn.style.display = "inline-block";
       clearBtn.style.display = "inline-block";
       checkBtn.style.display = "inline-block";
 
@@ -753,6 +825,33 @@
         renderSlotsFromState(tileState);
         renderTiles(tileState);
       };
+
+      backspaceBtn.onclick = () => {
+        if(locked) return;
+
+  // find rightmost filled slot
+        let last = -1;
+        for(let i = tileState.filled.length - 1; i >= 0; i--){
+          if(tileState.filled[i] !== ""){
+            last = i;
+            break;
+          }
+        }
+        if(last === -1) return;
+
+  // free the tile that originally filled this slot
+  const tileIdx = tileState.filledTileIndex[last];
+  tileState.filled[last] = "";
+  tileState.filledTileIndex[last] = -1;
+
+  if(tileIdx !== -1){
+    tileState.used[tileIdx] = false;
+  }
+
+  renderSlotsFromState(tileState);
+  renderTiles(tileState);
+};
+
 
       checkBtn.onclick = () => {
         if(locked) return;
@@ -790,12 +889,14 @@
       const q = QUESTIONS[idx];
       setProgress();
       resetCommonUI(q);
+      if(typeof startKitimusIdle === "function") startKitimusIdle();
       RENDERERS[q.type](q);
     }
 
     function advance(){
       if(idx === QUESTIONS.length - 1){
         showSummary();
+        if(typeof stopKitimusIdle === "function") stopKitimusIdle();
         return;
       }
       idx++;
@@ -806,6 +907,9 @@
       const total = results.length;
       const correct = results.filter(r => r.ok).length;
       const pct = total ? Math.round((correct / total) * 100) : 0;
+
+      stopKitimusIdle();
+
 
       // reset UI to summary view
       imgbox.classList.remove("show");
@@ -846,14 +950,18 @@
       } else {
         setKitimus("neutral");
       }
-
-      // Exit button becomes "Back to Week 2"
-      exitBtn.textContent = "Back to Week 2";
+       // summary should not show tiles buttons
+      bottomBtns.style.display = "none";
+      backspaceBtn.style.display = "none";
     }
+      document.addEventListener("pointerdown", () => {
+  // only blink if we're mid-quiz (not summary) and not locked in feedback
+  if(!kitimusImg) return;
+  if(locked) return;
 
-    exitBtn.addEventListener("click", () => {
-      window.location.href = "./index.html";
-    });
+  setKitimus("blink");
+  setTimeout(() => setKitimus("squint"), 120);
+}, { passive:true });
 
     // kick off
     renderQuestion();
