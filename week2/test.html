@@ -199,6 +199,26 @@
       line-height:1.05;
       margin-top:2px;
     }
+    .titleRow{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.mark{
+  visibility:hidden;      /* hidden until we show ✓/✕ */
+  font-weight:1000;
+  line-height:1;
+  font-size: clamp(34px, 9vw, 70px);
+  min-width: 44px;
+  text-align:right;
+  user-select:none;
+}
+
+.mark.good{ color: var(--good); }
+.mark.bad{  color: var(--bad);  }
+
     .qsub{
       color:var(--muted);
       font-weight:800;
@@ -421,8 +441,12 @@
       <section class="card" id="card">
         <div class="imgbox" id="imgbox"><img id="img" alt="" /></div>
 
-        <div class="qtitle" id="qtitle"></div>
-        <div class="qsub" id="qsub"></div>
+       <div class="titleRow">
+  <div class="qtitle" id="qtitle"></div>
+  <div class="mark" id="mark" aria-hidden="true"></div>
+</div>
+<div class="qsub" id="qsub"></div>
+
 
         <!-- Multiple choice -->
         <div class="answers" id="answers"></div>
@@ -468,12 +492,13 @@
     // =========================================================
 
     // ====== Data ======
-    const WEEK = [
-      { state:"Pennsylvania", abbrev:"PA", capital:"Harrisburg", img:"./images/pa-f.png" },
-      { state:"New Jersey",   abbrev:"NJ", capital:"Trenton",    img:"./images/nj-f.png" },
-      { state:"New York",     abbrev:"NY", capital:"Albany",     img:"./images/ny-f.png" },
-      { state:"Delaware",     abbrev:"DE", capital:"Dover",      img:"./images/de-f.png" }
-    ];
+  const WEEK = [
+  { state:"Pennsylvania", abbrev:"PA", capital:"Harrisburg", map:"./images/pa.png" },
+  { state:"New Jersey",   abbrev:"NJ", capital:"Trenton",    map:"./images/nj.png" },
+  { state:"New York",     abbrev:"NY", capital:"Albany",     map:"./images/ny.png" },
+  { state:"Delaware",     abbrev:"DE", capital:"Dover",      map:"./images/de.png" }
+];
+
 
     function shuffle(arr){
       const a = arr.slice();
@@ -505,7 +530,7 @@
         section:"Spelling",
         type:"mc",
         showImage:true,
-        img:s.img,
+        img:s.map,
         title:"Pick the correct spelling",
         subtitle:"Which one is spelled correctly?",
         correct,
@@ -518,8 +543,8 @@
       return {
         section:"Capitals",
         type:"tiles",
-        showImage:false,
-        img:null,
+        showImage:true,
+        img:s.map,
         title:s.capital,
         subtitle:"Tap the letters to spell the state.",
         correct:s.state,
@@ -605,8 +630,8 @@ const abbrevQuestions = WEEK.map(s => {
   return {
     section:"Abbreviations",
     type:"mc",
-    showImage:false,
-    img:null,
+    showImage:true,
+    img:s.map,
     title:s.state,
     subtitle:"Which abbreviation matches this state?",
     correct,
@@ -626,6 +651,8 @@ const abbrevQuestions = WEEK.map(s => {
     const img = document.getElementById("img");
     const qtitle = document.getElementById("qtitle");
     const qsub = document.getElementById("qsub");
+    const markEl = document.getElementById("mark");
+
 
     const answersEl = document.getElementById("answers");
     const capWrap = document.getElementById("capWrap");
@@ -704,6 +731,20 @@ function kitimusWrongPulse(){
 
     let idx = 0;
     let locked = false;
+function resetMark(){
+  if(!markEl) return;
+  markEl.textContent = "";
+  markEl.classList.remove("good","bad");
+  markEl.style.visibility = "hidden";
+}
+
+function showMark(ok){
+  if(!markEl) return;
+  markEl.style.visibility = "visible";
+  markEl.textContent = ok ? "✓" : "✕";
+  markEl.classList.toggle("good", ok);
+  markEl.classList.toggle("bad", !ok);
+}
 
     const results = []; // { q, ok }
     const missed = new Set();
@@ -722,6 +763,7 @@ function kitimusWrongPulse(){
 
     function resetCommonUI(q){
       locked = false;
+      resetMark();
       resultEl.textContent = "";
       reviewBox.style.display = "none";
       reviewBox.innerHTML = "";
@@ -772,6 +814,7 @@ function kitimusWrongPulse(){
           locked = true;
 
           const ok = (choice === q.correct);
+showMark(ok);
 
           // mark
           const btns = Array.from(answersEl.querySelectorAll(".choice"));
@@ -929,6 +972,7 @@ function kitimusWrongPulse(){
         const target = tileState.targetLetters.join("");
 
         const ok = (attempt === target);
+showMark(ok);
 
         if(ok){
           resultEl.textContent = "✅ Nice!";
