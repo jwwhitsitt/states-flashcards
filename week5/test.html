@@ -1043,16 +1043,16 @@
       bar.style.width = "100%";
       barText.textContent = `${total} of ${total}`;
 
-      if(pct === 100){
-        setTimeout(() => setKitimus("celebrate"), 200);
-        showCorner("ok");
-      } else if(pct >= 80){
-        setKitimus("squint");
-        showCorner("ok");
-      } else {
-        setKitimus("neutral");
-        showCorner("bad");
-      }
+// Final summary: do NOT show corner check or X
+showCorner("hide");
+
+if(pct === 100){
+  setTimeout(() => setKitimus("celebrate"), 200);
+} else if(pct >= 80){
+  setKitimus("squint");
+} else {
+  setKitimus("neutral");
+}
     }
 
     document.addEventListener("pointerdown", () => {
