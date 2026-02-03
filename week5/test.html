@@ -170,7 +170,7 @@
       overflow:hidden;
     }
 
-    /* Right-side ✓ / ✕ indicator */
+    /* Right-side ✓ / ✕ indicator (used only on summary now: DISABLED) */
     .cornerMark{
       position:absolute;
       right:18px;
@@ -482,6 +482,9 @@
     // 1) NEW Capital MC section (before tiles)
     // 2) Tiles prompt: "_____ is the capital of..."
     // 3) Tiles: always 18 tiles (3 rows of 6 typical)
+    // Fix:
+    // Summary screen uses ONLY the top-right mark (✓ or ✕).
+    // The cornerMark (mid-right) is always hidden on summary.
     // =========================================================
 
     const WEEK = [
@@ -544,7 +547,6 @@
     }));
 
     // Tiles section: use the capital to prompt spelling the state name
-    // Title must be a sentence now.
     const capitalQuestions = WEEK.map(s => ({
       section:"Capitals",
       type:"tiles",
@@ -621,7 +623,7 @@
       };
     });
 
-    // Order: Spelling -> NEW Capital MC -> Tiles -> Abbrev
+    // Order: Spelling -> Capital MC -> Tiles -> Abbrev
     const QUESTIONS = [
       ...spellingQuestions,
       ...capitalMCQuestions,
@@ -775,6 +777,7 @@
       checkBtn.disabled = false;
       checkBtn.textContent = "Check";
 
+      // Always hide cornerMark during questions
       cornerMark.style.display = "none";
       cornerMark.classList.remove("ok","bad");
       cornerMark.textContent = "";
@@ -821,22 +824,18 @@
     // ===== Tiles (18 tiles) =====
     function buildTileState(stateName){
       const words = stateName.toUpperCase().split(" ");
-      const letters = words.join("").split(""); // includes duplicates (important)
+      const letters = words.join("").split("");
 
-      // Build exactly 18 tiles: required letters + decoys
       const TARGET_TILE_COUNT = 18;
       const required = letters.slice();
 
-      // “Reasonable decoys”: common letters + a few vowels
       const DECOY_POOL = "EEEEAAAIIIOOONNNRRRSSSTTTLLLDDUUGGHBMCFPWYVKXJQZ".split("");
 
       const tiles = [];
       let id = 0;
 
-      // Add required letters first
       required.forEach(ch => tiles.push({ ch, id: id++ }));
 
-      // Add decoys until we hit 18
       while(tiles.length < TARGET_TILE_COUNT){
         const pick = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
         tiles.push({ ch: pick, id: id++ });
@@ -973,17 +972,6 @@
 
     const RENDERERS = { mc: renderMC, tiles: renderTilesQuestion };
 
-    function showCorner(mode){
-      if(mode === "hide"){
-        cornerMark.style.display = "none";
-        return;
-      }
-      cornerMark.style.display = "block";
-      cornerMark.textContent = (mode === "ok") ? "✓" : "✕";
-      cornerMark.classList.toggle("ok", mode === "ok");
-      cornerMark.classList.toggle("bad", mode === "bad");
-    }
-
     function renderQuestion(){
       const q = QUESTIONS[idx];
       setProgress();
@@ -1014,7 +1002,20 @@
       capWrap.classList.remove("show");
       bottomBtns.style.display = "none";
 
+      // IMPORTANT: kill any leftover per-question mark and then set it for summary
+      resetMark();
+
+      // Never show the mid-right corner mark on summary
+      cornerMark.style.display = "none";
+      cornerMark.classList.remove("ok","bad");
+      cornerMark.textContent = "";
+
+      // Score headline
       qtitle.textContent = `Score: ${pct}%`;
+
+      // Summary mark belongs next to the score (markEl in titleRow)
+      const passed = (pct >= 80);
+      showMark(passed);
 
       let message = "";
       if(pct === 100){
@@ -1043,16 +1044,13 @@
       bar.style.width = "100%";
       barText.textContent = `${total} of ${total}`;
 
-// Final summary: do NOT show corner check or X
-showCorner("hide");
-
-if(pct === 100){
-  setTimeout(() => setKitimus("celebrate"), 200);
-} else if(pct >= 80){
-  setKitimus("squint");
-} else {
-  setKitimus("neutral");
-}
+      if(pct === 100){
+        setTimeout(() => setKitimus("celebrate"), 200);
+      } else if(pct >= 80){
+        setKitimus("squint");
+      } else {
+        setKitimus("neutral");
+      }
     }
 
     document.addEventListener("pointerdown", () => {
