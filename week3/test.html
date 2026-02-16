@@ -474,9 +474,6 @@
   <div class="mark" id="mark" aria-hidden="true"></div>
 </div>
 <div class="qsub" id="qsub"></div>
-    
-
-
 
         <!-- Multiple choice -->
         <div class="answers" id="answers"></div>
@@ -492,7 +489,6 @@
   <button class="btn secondary" id="clearBtn" style="display:none;">Clear</button>
   <button class="btn" id="checkBtn" style="display:none;">Check</button>
 </div>
-
 
         <div class="result" id="result"></div>
         <div id="reviewBox" style="display:none;"></div>
@@ -529,7 +525,6 @@
   { state:"South Carolina", abbrev:"SC", capital:"Columbia",   map:"./images/sc.png" },
   { state:"North Carolina", abbrev:"NC", capital:"Raleigh",    map:"./images/nc.png" }
 ];
-
 
     function shuffle(arr){
       const a = arr.slice();
@@ -585,14 +580,7 @@
     });
 
   // ===== Abbreviation choices (harder) =====
-// Rule:
-// 1) Prefer REAL abbreviations that start with the same first letter as the state.
-// 2) If there aren’t enough real ones, generate FAKE ones using letters from the state name.
-// 3) Never generate a fake that matches a real abbreviation in the pool.
-// 4) Always include the correct answer.
-
 function uniqueLettersFromState(stateName){
-  // "New York" -> ["N","E","W","Y","O","R","K"]
   const letters = stateName.toUpperCase().replace(/[^A-Z]/g, "").split("");
   return Array.from(new Set(letters));
 }
@@ -601,13 +589,12 @@ function buildFakeAbbrevs(stateName, correct, pool, needed){
   const poolSet = new Set(pool);
   const out = [];
 
-  const first = stateName.trim().toUpperCase()[0];      // first letter of state
-  const correctSecond = correct[1];                     // second letter of real abbrev
+  const first = stateName.trim().toUpperCase()[0];
+  const correctSecond = correct[1];
 
   const letters = uniqueLettersFromState(stateName)
-    .filter(ch => ch !== first && ch !== correctSecond); // avoid using correct second letter
+    .filter(ch => ch !== first && ch !== correctSecond);
 
-  // If state name is weird and we have no letters left, fallback to alphabet
   const fallback = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
     .filter(ch => ch !== first && ch !== correctSecond);
 
@@ -620,10 +607,6 @@ function buildFakeAbbrevs(stateName, correct, pool, needed){
 
     const fake = (first + second);
 
-    // Reject if:
-    // - equals correct
-    // - already picked
-    // - is a REAL abbreviation in the pool
     if(fake === correct) continue;
     if(out.includes(fake)) continue;
     if(poolSet.has(fake)) continue;
@@ -643,14 +626,12 @@ const abbrevQuestions = WEEK.map(s => {
 
   const first = s.state.trim().toUpperCase()[0];
 
-  // 1) Prefer real same-first-letter distractors
   const realSameFirst = shuffle(
     pool.filter(x => x !== correct && x[0] === first)
   );
 
   const wrongs = realSameFirst.slice(0, 3);
 
-  // 2) If we still need more, add fake ones (built from letters in the state name)
   const stillNeed = 3 - wrongs.length;
   if(stillNeed > 0){
     const fakes = buildFakeAbbrevs(s.state, correct, pool, stillNeed);
@@ -685,7 +666,6 @@ const abbrevQuestions = WEEK.map(s => {
     const qsub = document.getElementById("qsub");
     const markEl = document.getElementById("mark");
 
-
     const answersEl = document.getElementById("answers");
     const capWrap = document.getElementById("capWrap");
     const slotsEl = document.getElementById("slots");
@@ -697,7 +677,6 @@ const abbrevQuestions = WEEK.map(s => {
     const cornerMark = document.getElementById("cornerMark");
 
 function setCornerMark(state){
-  // state: null | true | false
   if(!cornerMark) return;
 
   cornerMark.classList.remove("ok","bad");
@@ -717,7 +696,6 @@ function setCornerMark(state){
   }
 }
 
-
     const bottomBtns = document.getElementById("bottomBtns");
     const backspaceBtn = document.getElementById("backspaceBtn");
     const clearBtn = document.getElementById("clearBtn");
@@ -726,7 +704,7 @@ function setCornerMark(state){
     /* ============================
        Kitimus state machine (minimal)
        ============================ */
-  const kitimusImg = document.getElementById("kitimusImg");
+const kitimusImg = document.getElementById("kitimusImg");
 const KITIMUS = {
   neutral: "/mascots/kitimus/kitimus-neutral.png",
   squint: "/mascots/kitimus/kitimus-squint.png",
@@ -780,13 +758,13 @@ function startKitimusIdle(){
 }
 
 function kitimusWrongPulse(){
-  // wrong answer reaction: briefly neutral, then back to squint
   setTimeout(() => setKitimus("neutral"), 150);
   setTimeout(() => setKitimus("squint"), 650);
 }
 
     let idx = 0;
     let locked = false;
+
 function resetMark(){
   if(!markEl) return;
   markEl.textContent = "";
@@ -802,11 +780,10 @@ function showMark(ok){
   markEl.classList.toggle("bad", !ok);
 }
 
-    const results = []; // { q, ok }
+    const results = [];
     const missed = new Set();
 
-    // Capitals state
-    let tileState = null; // { targetWords, targetLetters, filled, tiles, used }
+    let tileState = null;
 
     function setProgress(){
       const n = QUESTIONS.length;
@@ -821,15 +798,12 @@ function showMark(ok){
       locked = false;
       resetMark();
       resultEl.textContent = "";
-  //    setCornerMark(null);
 
       reviewBox.style.display = "none";
       reviewBox.innerHTML = "";
 
-      // mascot default (neutral most of the time)
       setKitimus("squint");
 
-      // image
       if(q.showImage && q.img){
         imgbox.classList.add("show");
         img.src = q.img;
@@ -843,25 +817,20 @@ function showMark(ok){
       qtitle.textContent = q.title;
       qsub.textContent = q.subtitle;
 
-      // hide/show containers
       answersEl.style.display = "none";
       capWrap.classList.remove("show");
       clearBtn.style.display = "none";
       checkBtn.style.display = "none";
-      
-      // default: no bottom buttons unless tiles section
+
       bottomBtns.style.display = "none";
       backspaceBtn.style.display = "none";
-// reset check button feedback state
-checkBtn.classList.remove("good","bad");
-checkBtn.disabled = false;
-checkBtn.textContent = "Check";
 
+      checkBtn.classList.remove("good","bad");
+      checkBtn.disabled = false;
+      checkBtn.textContent = "Check";
     }
 
-    // =========================================================
-    // Renderer: Multiple Choice (Spelling + Abbrev)
-    // =========================================================
+    // ===== MC =====
     function renderMC(q){
       answersEl.style.display = "flex";
       answersEl.innerHTML = "";
@@ -876,9 +845,8 @@ checkBtn.textContent = "Check";
           locked = true;
 
           const ok = (choice === q.correct);
-showMark(ok);
+          showMark(ok);
 
-          // mark
           const btns = Array.from(answersEl.querySelectorAll(".choice"));
           btns.forEach(x => {
             if(x.textContent === q.correct) x.classList.add("correct");
@@ -888,7 +856,6 @@ showMark(ok);
 
           if(ok){
             resultEl.textContent = "✅ Nice!";
-            // correct stays neutral
           } else {
             resultEl.textContent = "❌ Almost — keep going.";
             missed.add(q.reviewLabel);
@@ -896,39 +863,48 @@ showMark(ok);
           }
 
           results.push({ q, ok });
-
-          // auto-advance
           setTimeout(() => advance(), 450);
         });
         answersEl.appendChild(b);
       });
     }
 
-    // =========================================================
-    // Renderer: Capitals Tiles (underscores + 2-line for 2 words)
-    // =========================================================
+    // ===== Tiles (UPDATED to 18 tiles like Week 5) =====
     function buildTileState(stateName){
-      const words = stateName.toUpperCase().split(" "); // ["NEW","JERSEY"] or ["PENNSYLVANIA"]
-      const letters = words.join("").split(""); // no spaces
-      const tiles = shuffle(letters.map((ch, i) => ({ ch, id: i })));
+      const words = stateName.toUpperCase().split(" ");
+      const letters = words.join("").split("");
+
+      const TARGET_TILE_COUNT = 18;
+      const required = letters.slice();
+
+      const DECOY_POOL = "EEEEAAAIIIOOONNNRRRSSSTTTLLLDDUUGGHBMCFPWYVKXJQZ".split("");
+
+      const tiles = [];
+      let id = 0;
+
+      required.forEach(ch => tiles.push({ ch, id: id++ }));
+
+      while(tiles.length < TARGET_TILE_COUNT){
+        const pick = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
+        tiles.push({ ch: pick, id: id++ });
+      }
+
+      const shuffled = shuffle(tiles);
+
       return {
         targetWords: words,
         targetLetters: letters,
         filled: new Array(letters.length).fill(""),
         filledTileIndex: new Array(letters.length).fill(-1),
-        tiles,
-        used: new Array(tiles.length).fill(false)
+        tiles: shuffled,
+        used: new Array(shuffled.length).fill(false)
       };
     }
 
     function renderSlotsFromState(ts){
       slotsEl.innerHTML = "";
-
       const words = ts.targetWords;
-      const isTwoWords = (words.length === 2);
-
-      // always centered; two words get 2 rows
-      const rows = isTwoWords ? words : [words[0]];
+      const rows = (words.length === 2) ? words : [words[0]];
       let cursor = 0;
 
       rows.forEach((w) => {
@@ -944,6 +920,7 @@ showMark(ok);
           row.appendChild(slot);
           cursor++;
         }
+
         slotsEl.appendChild(row);
       });
     }
@@ -965,7 +942,6 @@ showMark(ok);
           if(locked) return;
           if(ts.used[index]) return;
 
-          // find next empty slot
           const next = ts.filled.findIndex(x => x === "");
           if(next === -1) return;
 
@@ -1002,7 +978,6 @@ showMark(ok);
       backspaceBtn.onclick = () => {
         if(locked) return;
 
-  // find rightmost filled slot
         let last = -1;
         for(let i = tileState.filled.length - 1; i >= 0; i--){
           if(tileState.filled[i] !== ""){
@@ -1012,74 +987,60 @@ showMark(ok);
         }
         if(last === -1) return;
 
-  // free the tile that originally filled this slot
-  const tileIdx = tileState.filledTileIndex[last];
-  tileState.filled[last] = "";
-  tileState.filledTileIndex[last] = -1;
+        const tileIdx = tileState.filledTileIndex[last];
+        tileState.filled[last] = "";
+        tileState.filledTileIndex[last] = -1;
 
-  if(tileIdx !== -1){
-    tileState.used[tileIdx] = false;
-  }
+        if(tileIdx !== -1){
+          tileState.used[tileIdx] = false;
+        }
 
-  renderSlotsFromState(tileState);
-  renderTiles(tileState);
-};
+        renderSlotsFromState(tileState);
+        renderTiles(tileState);
+      };
 
+      checkBtn.onclick = () => {
+        if(locked) return;
+        locked = true;
 
-    checkBtn.onclick = () => {
-  if(locked) return;
-  locked = true;
+        const attempt = tileState.filled.join("");
+        const target = tileState.targetLetters.join("");
+        const ok = (attempt === target);
+        showMark(ok);
 
-  const attempt = tileState.filled.join("");
-  const target = tileState.targetLetters.join("");
-  const ok = (attempt === target);
-      showMark(ok);
+        checkBtn.classList.remove("good","bad");
+        checkBtn.classList.add(ok ? "good" : "bad");
+        checkBtn.disabled = true;
 
+        if(ok){
+          resultEl.textContent = "✅ Nice!";
+        } else {
+          resultEl.textContent = "❌ Almost — keep going.";
+          missed.add(q.reviewLabel);
+          kitimusWrongPulse();
+        }
 
-
-  // color the button itself (green/red)
-  checkBtn.classList.remove("good","bad");
-  checkBtn.classList.add(ok ? "good" : "bad");
-  checkBtn.disabled = true;
-
-  if(ok){
-    resultEl.textContent = "✅ Nice!";
-    // (keep mascot behavior you already have)
-  } else {
-    resultEl.textContent = "❌ Almost — keep going.";
-    missed.add(q.reviewLabel);
-    kitimusWrongPulse();
-  }
-
-  results.push({ q, ok });
-
-  setTimeout(() => advance(), 650);
-};
+        results.push({ q, ok });
+        setTimeout(() => advance(), 650);
+      };
     }
 
-    // =========================================================
-    // Main render + advance + summary
-    // =========================================================
-    const RENDERERS = {
-      "mc": renderMC,
-      "tiles": renderTilesQuestion
-    };
-// Corner indicator helper (right-side ✓ / ✕)
-function showCorner(mode){
-  // mode: "ok" | "bad" | "hide"
-  const el = document.getElementById("cornerMark");
-  if(!el) return;
+    const RENDERERS = { "mc": renderMC, "tiles": renderTilesQuestion };
 
-  if(mode === "hide"){
-    el.style.display = "none";
-    return;
-  }
+    function showCorner(mode){
+      const el = document.getElementById("cornerMark");
+      if(!el) return;
 
-  el.style.display = "block";
-  el.textContent = (mode === "ok") ? "✓" : "✕";
-  el.classList.toggle("ok", mode === "ok");
-  el.classList.toggle("bad", mode === "bad");
-}
+      if(mode === "hide"){
+        el.style.display = "none";
+        return;
+      }
+
+      el.style.display = "block";
+      el.textContent = (mode === "ok") ? "✓" : "✕";
+      el.classList.toggle("ok", mode === "ok");
+      el.classList.toggle("bad", mode === "bad");
+    }
 
     function renderQuestion(){
       const q = QUESTIONS[idx];
@@ -1106,8 +1067,6 @@ function showCorner(mode){
 
       stopKitimusIdle();
 
-
-      // reset UI to summary view
       imgbox.classList.remove("show");
       answersEl.style.display = "none";
       capWrap.classList.remove("show");
@@ -1115,26 +1074,25 @@ function showCorner(mode){
       checkBtn.style.display = "none";
 
       qtitle.textContent = `Score: ${pct}%`;
-     let message = "";
+      let message = "";
 
-if(pct === 100){
-  message = `Perfect score! You got all ${total} correct.`;
-} else if(pct >= 80){
-  message = `Nice work! You got ${correct} out of ${total} correct.`;
-} else {
-  message = `Keep practicing — you got ${correct} out of ${total} correct.`;
-}
+      if(pct === 100){
+        message = `Perfect score! You got all ${total} correct.`;
+      } else if(pct >= 80){
+        message = `Nice work! You got ${correct} out of ${total} correct.`;
+      } else {
+        message = `Keep practicing — you got ${correct} out of ${total} correct.`;
+      }
 
-qsub.textContent = message;
+      qsub.textContent = message;
 
       const misses = Array.from(missed);
-
-      // Tip text changes when 100%
       const tip = (pct === 100)
         ? "Perfect score! Nice work. Do a quick study run later to lock it in."
         : "Tip: Study the ones you missed, then try again to beat your score.";
 
-      const reviewHtml = `
+      reviewBox.style.display = "block";
+      reviewBox.innerHTML = `
         <div class="review">
           <h2>${misses.length ? "Review these:" : "Nothing to review — nice work!"}</h2>
           ${misses.length ? `<ul>${misses.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
@@ -1142,44 +1100,30 @@ qsub.textContent = message;
         </div>
       `;
 
-      reviewBox.style.display = "block";
-      reviewBox.innerHTML = reviewHtml;
-
-      // progress bar full
       bar.style.width = "100%";
       barText.textContent = `${total} of ${total}`;
 
-     // End-of-test mascot + corner indicator rule:
-// 100% = celebrate + green check
-// 80-99% = green check
-// 0-79% = red X
-if(pct === 100){
-  setTimeout(() => setKitimus("celebrate"), 200);
-  showCorner("ok");         // ✅
-} else if(pct >= 80){
-  setKitimus("squint");
-  showCorner("ok");         // ✅
-} else {
-  setKitimus("neutral");
-  showCorner("bad");        // ❌
-}
+      if(pct === 100){
+        setTimeout(() => setKitimus("celebrate"), 200);
+        showCorner("ok");
+      } else if(pct >= 80){
+        setKitimus("squint");
+        showCorner("ok");
+      } else {
+        setKitimus("neutral");
+        showCorner("bad");
+      }
+    }
 
-} // <-- END showSummary()
+    document.addEventListener("pointerdown", () => {
+      if(!kitimusImg) return;
+      if(locked) return;
 
+      setKitimus("blink");
+      setTimeout(() => setKitimus("squint"), 120);
+    }, { passive:true });
 
-
-document.addEventListener("pointerdown", () => {
-  // only blink if we're mid-quiz (not summary) and not locked in feedback
-  if(!kitimusImg) return;
-  if(locked) return;
-
-  setKitimus("blink");
-  setTimeout(() => setKitimus("squint"), 120);
-}, { passive:true });
-
-
-// kick off
-renderQuestion();
+    renderQuestion();
   </script>
 </body>
 </html>
