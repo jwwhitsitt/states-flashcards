@@ -31,7 +31,9 @@
       padding:10px 14px;
       z-index:10;
     }
-     .topbar{
+
+    /* HEADER LAYOUT: left/back, center/kitimus, right/home */
+    .topbar{
       max-width:980px;
       margin:0 auto;
       display:grid;
@@ -39,11 +41,8 @@
       align-items:center;
       gap:12px;
     }
-    .title{
-      font-weight:800;
-      font-size:20px;
-      margin:0;
-      line-height:1.2;
+    .back{
+      justify-self:start;
     }
     .back a{
       color:var(--link);
@@ -51,6 +50,29 @@
       font-weight:700;
       white-space:nowrap;
     }
+    .home{
+      justify-self:end;
+    }
+    .home a{
+      color:var(--link);
+      text-decoration:none;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .kitimusCenter{
+      justify-self:center;
+      width:56px;
+      height:56px;
+      user-select:none;
+      pointer-events:none;
+    }
+    .kitimusCenter img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
     main{
       max-width:980px;
       margin:0 auto;
@@ -97,7 +119,7 @@
   </style>
 </head>
 <body>
-   <header>
+  <header>
     <div class="topbar">
       <div class="back"><a href="../">← Back</a></div>
 
