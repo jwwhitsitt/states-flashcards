@@ -5,104 +5,77 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Week 6</title>
   <style>
-    :root{
-      --bg:#f4f6fb;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --shadow:0 10px 30px rgba(15,23,42,.10);
-      --radius:18px;
-      --btn:#0f172a;
-      --btnText:#ffffff;
-      --link:#1d4ed8;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
-      background:var(--bg);
-    }
-    header{
-      position:sticky;
-      top:0;
-      background:#fff;
-      box-shadow:0 1px 10px rgba(0,0,0,.06);
-      padding:10px 14px;
-      z-index:10;
-    }
-    .topbar{
-      max-width:980px;
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .title{
-      font-weight:800;
-      font-size:20px;
-      margin:0;
-      line-height:1.2;
-    }
-    .back a{
-      color:var(--link);
-      text-decoration:none;
-      font-weight:700;
-      white-space:nowrap;
-    }
-    main{
-      max-width:980px;
-      margin:0 auto;
-      padding:18px 14px 40px;
-      display:grid;
-      gap:14px;
-    }
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:18px;
-    }
-    .card h2{
-      margin:0 0 6px 0;
-      font-size:22px;
-    }
-    .card p{
-      margin:0 0 14px 0;
-      color:var(--muted);
-      font-size:16px;
-      line-height:1.35;
-    }
-    .btn{
-      display:inline-block;
-      width:100%;
-      text-align:center;
-      padding:14px 16px;
-      border-radius:14px;
-      background:var(--btn);
-      color:var(--btnText);
-      text-decoration:none;
-      font-weight:800;
-      font-size:18px;
-      border:0;
-      cursor:pointer;
-    }
-    @media (min-width:860px){
-      main{grid-template-columns:1fr 1fr}
-      .btn{width:auto; min-width:240px}
-      .card{display:flex; flex-direction:column}
-      .card .btn{margin-top:auto}
-    }
-  </style>
+  header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:#fff;
+    box-shadow:0 1px 10px rgba(0,0,0,.06);
+    padding:10px 14px;
+  }
+  .topbar{
+    max-width:980px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:center;
+    gap:12px;
+  }
+  .navLeft{
+    justify-self:start;
+    font-weight:800;
+  }
+  .navRight{
+    justify-self:end;
+    font-weight:800;
+  }
+  .navLeft a, .navRight a{
+    color:var(--link, #1d4ed8);
+    text-decoration:none;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .kitimusCenter{
+    justify-self:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:64px;
+  }
+  .kitimusCenter img{
+    height:56px;
+    width:auto;
+    display:block;
+    user-select:none;
+    pointer-events:none;
+  }
+
+  @media (max-width:520px){
+    .kitimusCenter{ height:56px; }
+    .kitimusCenter img{ height:48px; }
+  }
+</style>
 </head>
 <body>
   <header>
-    <div class="topbar">
-      <h1 class="title">Week 6</h1>
-      <div class="back"><a href="../">← Back to Lessons</a></div>
+  <div class="topbar">
+    <div class="navLeft"><a href="../">← Back</a></div>
+    <h1 class="title">Week 6</h1>
+    <div class="kitimusCenter" aria-hidden="true">
+      <img src="/mascots/kitimus/kitimus-neutral.png" alt="">
     </div>
-  </header>
+
+    <div class="navRight"><a href="/">Home</a></div>
+  </div>
+#</header>
+#
+#  <header>
+#    <div class="topbar">
+#      <h1 class="title">Week 6</h1>
+#      <div class="back"><a href="../">← Back to Lessons</a></div>
+#    </div>
+#  </header>
 
   <main>
     <section class="card">
