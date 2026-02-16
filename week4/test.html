@@ -794,18 +794,35 @@
       });
     }
 
-    // ===== Tiles =====
+    // ===== Tiles (UPDATED: 18 tiles like Week 5) =====
     function buildTileState(stateName){
       const words = stateName.toUpperCase().split(" ");
       const letters = words.join("").split("");
-      const tiles = shuffle(letters.map((ch, i) => ({ ch, id: i })));
+
+      const TARGET_TILE_COUNT = 18;
+      const required = letters.slice();
+
+      const DECOY_POOL = "EEEEAAAIIIOOONNNRRRSSSTTTLLLDDUUGGHBMCFPWYVKXJQZ".split("");
+
+      const tiles = [];
+      let id = 0;
+
+      required.forEach(ch => tiles.push({ ch, id: id++ }));
+
+      while(tiles.length < TARGET_TILE_COUNT){
+        const pick = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
+        tiles.push({ ch: pick, id: id++ });
+      }
+
+      const shuffled = shuffle(tiles);
+
       return {
         targetWords: words,
         targetLetters: letters,
         filled: new Array(letters.length).fill(""),
         filledTileIndex: new Array(letters.length).fill(-1),
-        tiles,
-        used: new Array(tiles.length).fill(false)
+        tiles: shuffled,
+        used: new Array(shuffled.length).fill(false)
       };
     }
 
