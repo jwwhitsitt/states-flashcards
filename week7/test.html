@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Week 7 – Check Your Learning</title>
 
-  <!-- Kitimus preload -->
+  <!-- Kitimus preload (prevents flicker) -->
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-neutral.png">
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-squint.png">
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-celebrate.png">
@@ -33,6 +33,7 @@
       --good:#22c55e;
       --bad:#ef4444;
 
+      /* responsive type */
       --h1: clamp(26px, 5.6vw, 44px);
       --h2: clamp(14px, 3.8vw, 18px);
       --choice: clamp(16px, 4.2vw, 20px);
@@ -42,6 +43,7 @@
       --gap: 10px;
     }
 
+    /* Hide the bottom "✅ Nice!" / "❌ Almost" line */
     #result{ display:none !important; }
 
     *{box-sizing:border-box}
@@ -80,8 +82,15 @@
     }
     header .spacer{ width:52px; }
 
-    main{ padding:12px; display:flex; justify-content:center; }
-    .wrap{ width:100%; max-width:720px; }
+    main{
+      padding:12px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:720px;
+    }
 
     .toprow{
       position:relative;
@@ -111,24 +120,43 @@
       overflow:hidden;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
     }
-    .bar{ height:100%; width:0%; background:var(--bar); border-radius:999px; transition:width .25s ease; }
+    .bar{
+      height:100%;
+      width:0%;
+      background:var(--bar);
+      border-radius:999px;
+      transition:width .25s ease;
+    }
     .bartext{
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      font-weight:1000; color:#111827; font-size:14px;
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      color:#111827;
+      font-size:14px;
       text-shadow:0 1px 0 rgba(255,255,255,.75);
       pointer-events:none;
     }
 
+    /* Kitimus perch */
     .kitimus{
       justify-self:end;
       align-self:center;
+
       width: clamp(52px, 10vw, 76px);
       height: clamp(52px, 10vw, 76px);
+
       pointer-events:none;
       user-select:none;
     }
-    .kitimus img{ width:100%; height:100%; object-fit:contain; display:block; }
+    .kitimus img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
 
     .card{
       position:relative;
@@ -142,6 +170,7 @@
       overflow:hidden;
     }
 
+    /* Mid-right ✓ / ✕ indicator (NEVER show on summary) */
     .cornerMark{
       position:absolute;
       right:18px;
@@ -157,6 +186,7 @@
     .cornerMark.ok{ color: var(--good); display:block; }
     .cornerMark.bad{ color: var(--bad); display:block; }
 
+    /* Image */
     .imgbox{
       border-radius:16px;
       background:#fff;
@@ -169,7 +199,12 @@
       overflow:hidden;
     }
     .imgbox.show{ display:flex; }
-    .imgbox img{ width:100%; height:100%; object-fit:contain; border-radius:12px; }
+    .imgbox img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:12px;
+    }
 
     .qtitle{
       font-size:var(--h1);
@@ -183,6 +218,7 @@
       justify-content:space-between;
       gap:12px;
     }
+
     .mark{
       visibility:hidden;
       font-weight:1000;
@@ -202,7 +238,12 @@
       font-size:var(--h2);
     }
 
-    .answers{ display:flex; flex-direction:column; gap:10px; }
+    /* MC answers */
+    .answers{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
     .choice{
       border-radius:16px;
       border:2px solid #e5e7eb;
@@ -215,10 +256,21 @@
       transition:transform .05s ease, border-color .1s ease, background .1s ease;
     }
     .choice:active{ transform:scale(.995); }
-    .choice.correct{ border-color:var(--good); background:#ecfdf5; }
-    .choice.wrong{ border-color:var(--bad); background:#fef2f2; }
+    .choice.correct{
+      border-color:var(--good);
+      background:#ecfdf5;
+    }
+    .choice.wrong{
+      border-color:var(--bad);
+      background:#fef2f2;
+    }
 
-    .capWrap{ display:none; flex-direction:column; gap:12px; }
+    /* Capitals (tiles) */
+    .capWrap{
+      display:none;
+      flex-direction:column;
+      gap:12px;
+    }
     .capWrap.show{ display:flex; }
 
     .slots{
@@ -234,7 +286,13 @@
       justify-content:center;
       overflow:hidden;
     }
-    .slotRow{ display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:nowrap; }
+    .slotRow{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      width:100%;
+      flex-wrap:nowrap;
+    }
     .slot{
       min-width:0;
       width:auto;
@@ -245,12 +303,18 @@
       line-height:1;
       color:#111827;
       user-select:none;
+
       padding:0 2px 6px 2px;
       border-bottom:4px solid #94a3b8;
       min-height:28px;
       letter-spacing:.5px;
     }
     .slot.empty{ color:transparent; }
+    .slot.space{
+      border-bottom:0;
+      width:14px;
+      padding:0;
+    }
 
     .tileGrid{
       width:100%;
@@ -274,9 +338,17 @@
       transition:transform .05s ease, border-color .1s ease, background .1s ease;
     }
     .tile:active{ transform:scale(.99); }
-    .tile.used{ opacity:.35; cursor:not-allowed; }
+    .tile.used{
+      opacity:.35;
+      cursor:not-allowed;
+    }
 
-    .bottom{ display:flex; gap:10px; flex-wrap:wrap; }
+    /* Buttons */
+    .bottom{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
     .btn{
       flex:1;
       min-width:140px;
@@ -290,11 +362,29 @@
       color:#fff;
       box-shadow:0 10px 20px rgba(0,0,0,.10);
     }
-    .btn.secondary{ background:#e5e7eb; color:#111827; box-shadow:none; }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+    .btn.secondary{
+      background:var(--btn2);
+      color:var(--btn2text);
+      box-shadow:none;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
     .btn.good{ background: var(--good) !important; color:#fff !important; }
     .btn.bad{  background: var(--bad)  !important; color:#fff !important; }
 
+    .result{
+      text-align:center;
+      font-weight:1000;
+      color:var(--muted);
+      font-size:14px;
+      margin-top:2px;
+      min-height:18px;
+    }
+
+    /* Summary */
     .review{
       margin-top:6px;
       padding:12px;
@@ -302,9 +392,24 @@
       background:#f8fafc;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
     }
-    .review h2{ margin:0 0 6px 0; font-size:16px; font-weight:1000; }
-    .review ul{ margin:0; padding-left:18px; color:#111827; font-weight:800; }
-    .small{ font-size:13px; color:var(--muted); font-weight:800; margin-top:8px; line-height:1.35; }
+    .review h2{
+      margin:0 0 6px 0;
+      font-size:16px;
+      font-weight:1000;
+    }
+    .review ul{
+      margin:0;
+      padding-left:18px;
+      color:#111827;
+      font-weight:800;
+    }
+    .small{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      margin-top:8px;
+      line-height:1.35;
+    }
 
     @media (max-height: 700px){
       :root{ --pad: 10px; --gap: 8px; }
@@ -332,8 +437,9 @@
         <div class="pill" id="sectionPill">Spelling</div>
         <div class="barwrap" aria-label="Progress">
           <div class="bar" id="bar"></div>
-          <div class="bartext" id="barText">1 of 12</div>
+          <div class="bartext" id="barText">1 of 15</div>
         </div>
+
         <div class="kitimus" aria-hidden="true">
           <img id="kitimusImg" src="/mascots/kitimus/kitimus-neutral.png" alt="">
         </div>
@@ -363,19 +469,26 @@
           <button class="btn" id="checkBtn" style="display:none;">Check</button>
         </div>
 
+        <div class="result" id="result"></div>
         <div id="reviewBox" style="display:none;"></div>
       </section>
     </div>
   </main>
 
   <script>
-    // ====== Week 7 data ======
-    const WEEK = [
-      { state:"North Dakota", abbrev:"ND", capital:"Bismarck", map:"./images/nd.png" },
-      { state:"South Dakota", abbrev:"SD", capital:"Pierre",   map:"./images/sd.png" },
-      { state:"Nebraska",     abbrev:"NE", capital:"Lincoln",  map:"./images/ne.png" },
-      { state:"Kansas",       abbrev:"KS", capital:"Topeka",   map:"./images/ks.png" }
-    ];
+    // =========================================================
+    // Week 7 Test - SAME ENGINE as Week 5. Content updated only.
+    // Sections:
+    // 1) Spelling (MC)
+    // 2) Capital Quiz (MC: choose capital)
+    // 3) Capitals (Tiles: spell state using capital prompt) - 18 tiles
+    // 4) Abbreviations (MC)
+    //
+    // Summary screen uses ONLY the top-right mark (✓ or ✕).
+    // The mid-right cornerMark is always hidden on summary.
+    // =========================================================
+
+    const WEEK = [{"state": "North Dakota", "capital": "Bismarck", "abbrev": "ND", "map": "./images/nd-map.png"}, {"state": "South Dakota", "capital": "Pierre", "abbrev": "SD", "map": "./images/sd-map.png"}, {"state": "Nebraska", "capital": "Lincoln", "abbrev": "NE", "map": "./images/ne-map.png"}, {"state": "Kansas", "capital": "Topeka", "abbrev": "KS", "map": "./images/ks-map.png"}];
 
     function shuffle(arr){
       const a = arr.slice();
@@ -386,21 +499,16 @@
       return a;
     }
 
-    // Spelling fakes: same-word-ish, not random states
-    const SPELLING_FAKES = {
-      "North Dakota":["Noth Dakota","North Dakoda","North Dakotta"],
-      "South Dakota":["Soth Dakota","South Dakoda","South Dakotta"],
-      "Nebraska":["Nebraskah","Nebrasska","Nebrasca"],
-      "Kansas":["Kanses","Kansaas","Kanzas"]
-    };
+    // 4-option spelling MC: 1 correct + 3 near-miss
+    const SPELLING_FAKES = {"North Dakota": ["North Dakoda", "Noth Dakota", "North Dakotta"], "South Dakota": ["South Dakoda", "Soth Dakota", "South Dakotta"], "Nebraska": ["Nebraskaa", "Nebreska", "Nebrassa"], "Kansas": ["Kanses", "Kanzas", "Kansaas"]};
 
-    // ===== Build questions: 12 total (4 spelling, 4 capitals, 4 abbrev) =====
     const spellingQuestions = WEEK.map(s => {
       const correct = s.state;
       const fakes = (SPELLING_FAKES[correct] || []).slice(0,3);
       while(fakes.length < 3){
         fakes.push(correct.replace(/a/ig,"e").slice(0, Math.max(3, correct.length)));
       }
+      const choices = shuffle([correct, ...fakes.slice(0,3)]);
       return {
         section:"Spelling",
         type:"mc",
@@ -409,62 +517,88 @@
         title:"Pick the correct spelling",
         subtitle:"Which one is spelled correctly?",
         correct,
-        choices: shuffle([correct, ...fakes.slice(0,3)]),
+        choices,
         reviewLabel:`Spelling: ${s.state}`
       };
     });
 
+    // Capital multiple choice section: choices are all capitals in this week.
+    const WEEK_CAPITALS = WEEK.map(s => s.capital);
+    const capitalMCQuestions = WEEK.map(s => ({
+      section:"Capital Quiz",
+      type:"mc",
+      showImage:true,
+      img:s.map,
+      title:`What is the capital of ${s.state}?`,
+      subtitle:"Pick one.",
+      correct:s.capital,
+      choices: shuffle(WEEK_CAPITALS),
+      reviewLabel:`Capital Quiz: ${s.state}`
+    }));
+
+    // Tiles: use the capital to prompt spelling the state name
     const capitalQuestions = WEEK.map(s => ({
       section:"Capitals",
       type:"tiles",
       showImage:true,
       img:s.map,
-      title:s.capital,
+      title:`${s.capital} is the capital of…`,
       subtitle:"Tap the letters to spell the state.",
       correct:s.state,
       reviewLabel:`Capitals: ${s.capital}`
     }));
 
-    // Abbrev choices: prefer real same-first-letter distractors; fallback to fakes
     function uniqueLettersFromState(stateName){
       const letters = stateName.toUpperCase().replace(/[^A-Z]/g, "").split("");
       return Array.from(new Set(letters));
     }
+
     function buildFakeAbbrevs(stateName, correct, pool, needed){
       const poolSet = new Set(pool);
       const out = [];
+
       const first = stateName.trim().toUpperCase()[0];
       const correctSecond = correct[1];
 
-      const letters = uniqueLettersFromState(stateName).filter(ch => ch !== first && ch !== correctSecond);
-      const fallback = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter(ch => ch !== first && ch !== correctSecond);
+      const letters = uniqueLettersFromState(stateName)
+        .filter(ch => ch !== first && ch !== correctSecond);
+
+      const fallback = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+        .filter(ch => ch !== first && ch !== correctSecond);
 
       let guard = 0;
       while(out.length < needed && guard < 200){
         guard++;
+
         const secondPool = letters.length ? letters : fallback;
         const second = secondPool[Math.floor(Math.random() * secondPool.length)];
         const fake = (first + second);
+
         if(fake === correct) continue;
         if(out.includes(fake)) continue;
         if(poolSet.has(fake)) continue;
+
         out.push(fake);
       }
+
       return out;
     }
 
     const abbrevQuestions = WEEK.map(s => {
       const correct = s.abbrev;
+
       const pool = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
                     "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
                     "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
-      const first = s.state.trim().toUpperCase()[0];
 
+      const first = s.state.trim().toUpperCase()[0];
       const realSameFirst = shuffle(pool.filter(x => x !== correct && x[0] === first));
       const wrongs = realSameFirst.slice(0, 3);
 
       const stillNeed = 3 - wrongs.length;
-      if(stillNeed > 0) wrongs.push(...buildFakeAbbrevs(s.state, correct, pool, stillNeed));
+      if(stillNeed > 0){
+        wrongs.push(...buildFakeAbbrevs(s.state, correct, pool, stillNeed));
+      }
 
       return {
         section:"Abbreviations",
@@ -479,9 +613,15 @@
       };
     });
 
-    const QUESTIONS = [...spellingQuestions, ...capitalQuestions, ...abbrevQuestions];
+    // Order: Spelling -> Capital MC -> Tiles -> Abbrev
+    const QUESTIONS = [
+      ...spellingQuestions,
+      ...capitalMCQuestions,
+      ...capitalQuestions,
+      ...abbrevQuestions
+    ];
 
-    // ===== UI hooks =====
+    // ====== UI hooks ======
     const sectionPill = document.getElementById("sectionPill");
     const bar = document.getElementById("bar");
     const barText = document.getElementById("barText");
@@ -497,7 +637,9 @@
     const slotsEl = document.getElementById("slots");
     const tileGrid = document.getElementById("tileGrid");
 
+    const resultEl = document.getElementById("result");
     const reviewBox = document.getElementById("reviewBox");
+
     const cornerMark = document.getElementById("cornerMark");
 
     const bottomBtns = document.getElementById("bottomBtns");
@@ -505,7 +647,7 @@
     const clearBtn = document.getElementById("clearBtn");
     const checkBtn = document.getElementById("checkBtn");
 
-    // Kitimus
+    // ===== Kitimus =====
     const kitimusImg = document.getElementById("kitimusImg");
     const KITIMUS = {
       neutral: "/mascots/kitimus/kitimus-neutral.png",
@@ -515,42 +657,54 @@
       blink: "/mascots/kitimus/kitimus-blink.png",
       celebrate: "/mascots/kitimus/kitimus-celebrate.png"
     };
+
     function setKitimus(state){
       if(!kitimusImg) return;
       const src = KITIMUS[state] || KITIMUS.neutral;
-      if(kitimusImg.getAttribute("src") !== src) kitimusImg.setAttribute("src", src);
+      if(kitimusImg.getAttribute("src") !== src){
+        kitimusImg.setAttribute("src", src);
+      }
     }
 
     let kitimusIdleTimer = null;
     function stopKitimusIdle(){
-      if(kitimusIdleTimer){ clearInterval(kitimusIdleTimer); kitimusIdleTimer = null; }
+      if(kitimusIdleTimer){
+        clearInterval(kitimusIdleTimer);
+        kitimusIdleTimer = null;
+      }
     }
     function startKitimusIdle(){
       stopKitimusIdle();
       setKitimus("squint");
+
       kitimusIdleTimer = setInterval(() => {
         if(locked) return;
+
         const r = Math.random();
+
         if(r < 0.22){
           setKitimus("blink");
           setTimeout(() => setKitimus("squint"), 140);
           return;
         }
+
         if(r < 0.55){
           const dir = (Math.random() < 0.5) ? "squintLeft" : "squintRight";
           setKitimus(dir);
           setTimeout(() => setKitimus("squint"), 220);
           return;
         }
+
         setKitimus("squint");
       }, 2200);
     }
+
     function kitimusWrongPulse(){
       setTimeout(() => setKitimus("neutral"), 150);
       setTimeout(() => setKitimus("squint"), 650);
     }
 
-    // State
+    // ===== State =====
     let idx = 0;
     let locked = false;
     const results = [];
@@ -581,6 +735,8 @@
     function resetCommonUI(q){
       locked = false;
       resetMark();
+      resultEl.textContent = "";
+
       reviewBox.style.display = "none";
       reviewBox.innerHTML = "";
 
@@ -589,7 +745,7 @@
       if(q.showImage && q.img){
         imgbox.classList.add("show");
         img.src = q.img;
-        img.alt = "State map";
+        img.alt = "State flashcard";
       } else {
         imgbox.classList.remove("show");
         img.src = "";
@@ -606,16 +762,18 @@
       backspaceBtn.style.display = "none";
       clearBtn.style.display = "none";
       checkBtn.style.display = "none";
+
       checkBtn.classList.remove("good","bad");
       checkBtn.disabled = false;
       checkBtn.textContent = "Check";
 
+      // Always hide cornerMark during questions
       cornerMark.style.display = "none";
       cornerMark.classList.remove("ok","bad");
       cornerMark.textContent = "";
     }
 
-    // MC renderer
+    // ===== MC =====
     function renderMC(q){
       answersEl.style.display = "flex";
       answersEl.innerHTML = "";
@@ -653,24 +811,42 @@
       });
     }
 
-    // Tiles renderer (Capitals)
+    // ===== Tiles (18 tiles) =====
     function buildTileState(stateName){
       const words = stateName.toUpperCase().split(" ");
       const letters = words.join("").split("");
-      const tiles = shuffle(letters.map((ch, i) => ({ ch, id: i })));
+
+      const TARGET_TILE_COUNT = 18;
+      const required = letters.slice();
+
+      const DECOY_POOL = "EEEEAAAIIIOOONNNRRRSSSTTTLLLDDUUGGHBMCFPWYVKXJQZ".split("");
+
+      const tiles = [];
+      let id = 0;
+
+      required.forEach(ch => tiles.push({ ch, id: id++ }));
+
+      while(tiles.length < TARGET_TILE_COUNT){
+        const pick = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
+        tiles.push({ ch: pick, id: id++ });
+      }
+
+      const shuffled = shuffle(tiles);
+
       return {
         targetWords: words,
         targetLetters: letters,
         filled: new Array(letters.length).fill(""),
         filledTileIndex: new Array(letters.length).fill(-1),
-        tiles,
-        used: new Array(tiles.length).fill(false)
+        tiles: shuffled,
+        used: new Array(shuffled.length).fill(false)
       };
     }
 
     function renderSlotsFromState(ts){
       slotsEl.innerHTML = "";
-      const rows = (ts.targetWords.length === 2) ? ts.targetWords : [ts.targetWords[0]];
+      const words = ts.targetWords;
+      const rows = (words.length === 2) ? words : [words[0]];
       let cursor = 0;
 
       rows.forEach((w) => {
@@ -743,6 +919,7 @@
 
       backspaceBtn.onclick = () => {
         if(locked) return;
+
         let last = -1;
         for(let i = tileState.filled.length - 1; i >= 0; i--){
           if(tileState.filled[i] !== ""){ last = i; break; }
@@ -752,6 +929,7 @@
         const tileIdx = tileState.filledTileIndex[last];
         tileState.filled[last] = "";
         tileState.filledTileIndex[last] = -1;
+
         if(tileIdx !== -1) tileState.used[tileIdx] = false;
 
         renderSlotsFromState(tileState);
@@ -784,17 +962,6 @@
 
     const RENDERERS = { mc: renderMC, tiles: renderTilesQuestion };
 
-    function showCorner(mode){
-      if(mode === "hide"){
-        cornerMark.style.display = "none";
-        return;
-      }
-      cornerMark.style.display = "block";
-      cornerMark.textContent = (mode === "ok") ? "✓" : "✕";
-      cornerMark.classList.toggle("ok", mode === "ok");
-      cornerMark.classList.toggle("bad", mode === "bad");
-    }
-
     function renderQuestion(){
       const q = QUESTIONS[idx];
       setProgress();
@@ -825,12 +992,28 @@
       capWrap.classList.remove("show");
       bottomBtns.style.display = "none";
 
+      // Kill any leftover per-question mark and then set it for summary
+      resetMark();
+
+      // Never show the mid-right corner mark on summary
+      cornerMark.style.display = "none";
+      cornerMark.classList.remove("ok","bad");
+      cornerMark.textContent = "";
+
       qtitle.textContent = `Score: ${pct}%`;
 
+      // Summary mark belongs next to the score (markEl in titleRow)
+      const passed = (pct >= 80);
+      showMark(passed);
+
       let message = "";
-      if(pct === 100) message = `Perfect score! You got all ${total} correct.`;
-      else if(pct >= 80) message = `Nice work! You got ${correct} out of ${total} correct.`;
-      else message = `Keep practicing — you got ${correct} out of ${total} correct.`;
+      if(pct === 100){
+        message = `Perfect score! You got all ${total} correct.`;
+      } else if(pct >= 80){
+        message = `Nice work! You got ${correct} out of ${total} correct.`;
+      } else {
+        message = `Keep practicing — you got ${correct} out of ${total} correct.`;
+      }
       qsub.textContent = message;
 
       const misses = Array.from(missed);
@@ -852,13 +1035,10 @@
 
       if(pct === 100){
         setTimeout(() => setKitimus("celebrate"), 200);
-        showCorner("ok");
       } else if(pct >= 80){
         setKitimus("squint");
-        showCorner("ok");
       } else {
         setKitimus("neutral");
-        showCorner("bad");
       }
     }
 

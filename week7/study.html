@@ -74,6 +74,7 @@
       gap:12px;
     }
 
+    /* big outer card */
     .panel{
       background:var(--card);
       border-radius:var(--radius);
@@ -85,6 +86,7 @@
       overflow:hidden;
     }
 
+    /* 3D flip scene */
     .scene{
       width:100%;
       height:min(52vh, 420px);
@@ -133,6 +135,7 @@
       transform:rotateY(180deg);
     }
 
+    /* controls */
     .controls{
       display:flex;
       gap:10px;
@@ -168,6 +171,7 @@
       margin-top:-2px;
     }
 
+    /* small hint text */
     .hint{
       text-align:center;
       color:var(--muted);
@@ -176,6 +180,7 @@
       margin-top:-6px;
     }
 
+    /* short screens: shrink height slightly */
     @media (max-height: 700px){
       .scene{ height:min(48vh, 360px); min-height:250px; }
       .btn{ padding:10px 12px; font-size:15px; }
@@ -212,19 +217,14 @@
           <button class="btn" id="nextBtn">Next</button>
         </div>
 
-        <div class="meta" id="metaText">Card 1 of 4</div>
+        <div class="meta" id="metaText">Card 1 of 5</div>
       </section>
     </div>
   </main>
 
   <script>
     // Week 7 set
-    const CARDS = [
-      { key:"nd" }, // nd-f.png / nd-b.png
-      { key:"sd" }, // sd-f.png / sd-b.png
-      { key:"ne" }, // ne-f.png / ne-b.png
-      { key:"ks" }  // ks-f.png / ks-b.png
-    ];
+    const CARDS = [{"key": "nd"}, {"key": "sd"}, {"key": "ne"}, {"key": "ks"}];
 
     const flipCard = document.getElementById("flipCard");
     const frontImg = document.getElementById("frontImg");
@@ -275,8 +275,10 @@
       setMeta();
     }
 
+    // Click card to flip
     flipCard.addEventListener("click", flip);
 
+    // Keyboard accessibility (enter/space flips)
     flipCard.addEventListener("keydown", (e) => {
       if(e.key === "Enter" || e.key === " "){
         e.preventDefault();
