@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Abbreviation Trainer</title>
+
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --shadow:0 10px 30px rgba(15,23,42,.12);
+      --radius:18px;
+      --link:#1d4ed8;
+      --btn:#0f172a;
+      --btn2:#e5e7eb;
+      --btn2text:#111827;
+      --accent:#1e3a8a;
+      --accentBg:#dbeafe;
+      --good:#16a34a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    header{
+      flex:0 0 auto;
+      padding:10px 14px;
+      background:#fff;
+      box-shadow:0 1px 10px rgba(0,0,0,.06);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    header a{
+      text-decoration:none;
+      color:var(--link);
+      font-weight:900;
+      white-space:nowrap;
+    }
+    header h1{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+      text-align:center;
+      flex:1;
+    }
+    header .spacer{ width:52px; }
+
+    main{
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      justify-content:center;
+      align-items:stretch;
+      padding:12px;
+      overflow:hidden;
+    }
+    .wrap{
+      width:100%;
+      max-width:720px;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:12px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .pill{
+      background:var(--accentBg);
+      color:var(--accent);
+      font-weight:1000;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:14px;
+      min-width:122px;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .progress{
+      flex:1;
+      height:18px;
+      border-radius:999px;
+      background:#e5e7eb;
+      position:relative;
+      overflow:hidden;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+    }
+    .progressBar{
+      height:100%;
+      width:0%;
+      background:#c7d2fe;
+      border-radius:999px;
+      transition:width .25s ease;
+    }
+    .progressText{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:1000;
+      color:#111827;
+      text-shadow:0 1px 0 rgba(255,255,255,.75);
+      pointer-events:none;
+    }
+
+    .panel{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      overflow:hidden;
+    }
+
+    .revealCard{
+      border:0;
+      width:100%;
+      background:#fff;
+      border-radius:20px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+      padding:10px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+    .revealCard:active{
+      transform:scale(.998);
+    }
+
+    .imgbox{
+      width:100%;
+      height:min(42vh, 320px);
+      min-height:220px;
+      border-radius:16px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .imgbox img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:12px;
+    }
+
+    .stateName{
+      font-size:clamp(28px, 5.8vw, 46px);
+      font-weight:1000;
+      text-align:center;
+      line-height:1.05;
+      margin-top:2px;
+    }
+    .instruction{
+      text-align:center;
+      color:var(--muted);
+      font-weight:900;
+      font-size:clamp(14px, 3.8vw, 18px);
+      margin-top:-4px;
+    }
+
+    .tapHint{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:#eef2ff;
+      color:#28327a;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:1000;
+    }
+
+    .revealBox{
+      width:100%;
+      border-radius:18px;
+      background:#f8fafc;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+      padding:14px 12px;
+      display:none;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+      text-align:center;
+    }
+    .revealBox.show{ display:flex; }
+
+    .soundName{
+      font-size:clamp(26px, 5vw, 40px);
+      font-weight:1000;
+      line-height:1.05;
+      letter-spacing:.2px;
+    }
+    .soundName .hl{
+      color:var(--good);
+      text-decoration:underline;
+      text-underline-offset:4px;
+      text-decoration-thickness:3px;
+    }
+    .abbr{
+      font-size:clamp(30px, 7vw, 52px);
+      font-weight:1000;
+      letter-spacing:6px;
+      color:#111827;
+      line-height:1;
+    }
+    .explanation{
+      font-size:15px;
+      font-weight:900;
+      color:var(--muted);
+      line-height:1.45;
+      max-width:560px;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+    }
+    .btn{
+      flex:1;
+      padding:12px 14px;
+      border-radius:14px;
+      border:0;
+      font-size:16px;
+      font-weight:1000;
+      cursor:pointer;
+      background:var(--btn);
+      color:#fff;
+      box-shadow:0 10px 20px rgba(0,0,0,.10);
+    }
+    .btn.secondary{
+      background:var(--btn2);
+      color:var(--btn2text);
+      box-shadow:none;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .meta{
+      text-align:center;
+      color:var(--muted);
+      font-weight:900;
+      font-size:14px;
+      margin-top:-2px;
+    }
+
+    .introNote{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+      margin-top:-4px;
+      line-height:1.35;
+    }
+
+    @media (max-height: 760px){
+      .imgbox{ height:min(36vh, 270px); min-height:180px; }
+      .btn{ padding:10px 12px; font-size:15px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="./index.html">← Back</a>
+    <h1>Abbreviation Trainer</h1>
+    <div class="spacer"></div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="pill">Sound Trainer</div>
+        <div class="progress" aria-label="Progress">
+          <div class="progressBar" id="progressBar"></div>
+          <div class="progressText" id="progressText">1 of 49</div>
+        </div>
+      </div>
+
+      <section class="panel">
+        <button class="revealCard" id="revealCard" type="button" aria-label="Tap to reveal the sound letters">
+          <div class="imgbox">
+            <img id="stateImg" alt="State image" />
+          </div>
+
+          <div class="stateName" id="stateName">Arizona</div>
+          <div class="instruction" id="instruction">Find the strongest sounds in the state name.</div>
+          <div class="tapHint" id="tapHint">Tap to reveal</div>
+
+          <div class="revealBox" id="revealBox">
+            <div class="soundName" id="soundName">Ari<span class="hl">Z</span>ona</div>
+            <div class="abbr" id="abbrText">AZ</div>
+            <div class="explanation" id="explanation">
+              The strongest sounds in Arizona are A and Z, so the abbreviation is AZ.
+            </div>
+          </div>
+        </button>
+
+        <div class="controls">
+          <button class="btn secondary" id="backBtn">Back</button>
+          <button class="btn secondary" id="revealBtn">Reveal</button>
+          <button class="btn" id="nextBtn">Next</button>
+        </div>
+
+        <div class="meta" id="metaText">Card 1 of 49</div>
+        <div class="introNote" id="introNote">Listen for the loud sounds. The abbreviation keeps the strongest sound letters.</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const CARDS = [
+      {
+        key: "intro",
+        intro: true,
+        title: "Kitimus says:",
+        instruction: "State abbreviations keep the strongest sounds in the name.",
+        hint: "Tap to see examples",
+        revealName: "Ari<span class='hl'>Z</span>ona • Kan<span class='hl'>S</span>a<span class='hl'>S</span> • Mi<span class='hl'>N</span>nesota",
+        abbr: "AZ • KS • MN",
+        explanation: "You do not always use the first two letters. You keep the letters that sound the strongest and help the state sound like itself."
+      },
+
+      { key:"me", state:"Maine", revealName:"<span class='hl'>M</span>ain<span class='hl'>E</span>", abbr:"ME", explanation:"The strongest sounds in Maine are M and E, so the abbreviation is ME." },
+      { key:"nh", state:"New Hampshire", revealName:"New <span class='hl'>H</span>ampshire", abbr:"NH", explanation:"For New Hampshire, the abbreviation uses N from New and H from Hampshire, so it becomes NH." },
+      { key:"vt", state:"Vermont", revealName:"<span class='hl'>V</span>ermon<span class='hl'>T</span>", abbr:"VT", explanation:"The strongest sounds in Vermont are V and T, so the abbreviation is VT." },
+      { key:"ma", state:"Massachusetts", revealName:"<span class='hl'>M</span>assachusetts<span class='hl'>A</span>", abbr:"MA", explanation:"Massachusetts keeps the strong sounds M and A, so the abbreviation is MA." },
+      { key:"ct", state:"Connecticut", revealName:"<span class='hl'>C</span>onnec<span class='hl'>T</span>icut", abbr:"CT", explanation:"Connecticut keeps the strong sounds C and T, so the abbreviation is CT." },
+      { key:"ri", state:"Rhode Island", revealName:"<span class='hl'>R</span>hode <span class='hl'>I</span>sland", abbr:"RI", explanation:"Rhode Island keeps the strong sounds R and I, so the abbreviation is RI." },
+
+      { key:"ny", state:"New York", revealName:"New <span class='hl'>Y</span>ork", abbr:"NY", explanation:"New York uses N from New and Y from York, so the abbreviation is NY." },
+      { key:"pa", state:"Pennsylvania", revealName:"<span class='hl'>P</span>ennsylvani<span class='hl'>A</span>", abbr:"PA", explanation:"Pennsylvania keeps the strongest sounds P and A, so the abbreviation is PA." },
+      { key:"nj", state:"New Jersey", revealName:"New <span class='hl'>J</span>ersey", abbr:"NJ", explanation:"New Jersey uses N from New and J from Jersey, so the abbreviation is NJ." },
+      { key:"de", state:"Delaware", revealName:"<span class='hl'>D</span>elawar<span class='hl'>E</span>", abbr:"DE", explanation:"Delaware keeps the strong sounds D and E, so the abbreviation is DE." },
+
+      { key:"md", state:"Maryland", revealName:"<span class='hl'>M</span>aryl<span class='hl'>D</span>", abbr:"MD", explanation:"Maryland keeps the strongest sounds M and D, so the abbreviation is MD." },
+      { key:"va", state:"Virginia", revealName:"<span class='hl'>V</span>irgini<span class='hl'>A</span>", abbr:"VA", explanation:"Virginia keeps the strong sounds V and A, so the abbreviation is VA." },
+      { key:"wv", state:"West Virginia", revealName:"<span class='hl'>W</span>est <span class='hl'>V</span>irginia", abbr:"WV", explanation:"West Virginia uses W from West and V from Virginia, so the abbreviation is WV." },
+      { key:"nc", state:"North Carolina", revealName:"<span class='hl'>N</span>orth <span class='hl'>C</span>arolina", abbr:"NC", explanation:"North Carolina uses N from North and C from Carolina, so the abbreviation is NC." },
+      { key:"sc", state:"South Carolina", revealName:"<span class='hl'>S</span>outh <span class='hl'>C</span>arolina", abbr:"SC", explanation:"South Carolina uses S from South and C from Carolina, so the abbreviation is SC." },
+
+      { key:"mi", state:"Michigan", revealName:"<span class='hl'>M</span>ich<span class='hl'>I</span>gan", abbr:"MI", explanation:"Michigan keeps the strong sounds M and I, so the abbreviation is MI." },
+      { key:"in", state:"Indiana", revealName:"<span class='hl'>I</span><span class='hl'>N</span>diana", abbr:"IN", explanation:"Indiana keeps the first strong sounds I and N, so the abbreviation is IN." },
+      { key:"oh", state:"Ohio", revealName:"<span class='hl'>O</span><span class='hl'>H</span>io", abbr:"OH", explanation:"Ohio keeps the first strong sounds O and H, so the abbreviation is OH." },
+      { key:"ky", state:"Kentucky", revealName:"<span class='hl'>K</span>entuck<span class='hl'>Y</span>", abbr:"KY", explanation:"Kentucky keeps the strongest sounds K and Y, so the abbreviation is KY." },
+      { key:"tn", state:"Tennessee", revealName:"<span class='hl'>T</span>e<span class='hl'>N</span>nessee", abbr:"TN", explanation:"Tennessee keeps the strong sounds T and N, so the abbreviation is TN." },
+
+      { key:"ms", state:"Mississippi", revealName:"<span class='hl'>M</span>ississipp<span class='hl'>I</span>", abbr:"MS", explanation:"Mississippi keeps the strong sounds M and S, so the abbreviation is MS." },
+      { key:"al", state:"Alabama", revealName:"<span class='hl'>A</span><span class='hl'>L</span>abama", abbr:"AL", explanation:"Alabama keeps the first strong sounds A and L, so the abbreviation is AL." },
+      { key:"ga", state:"Georgia", revealName:"<span class='hl'>G</span>eorgi<span class='hl'>A</span>", abbr:"GA", explanation:"Georgia keeps the strong sounds G and A, so the abbreviation is GA." },
+      { key:"fl", state:"Florida", revealName:"<span class='hl'>F</span><span class='hl'>L</span>orida", abbr:"FL", explanation:"Florida keeps the first strong sounds F and L, so the abbreviation is FL." },
+
+      { key:"mn", state:"Minnesota", revealName:"<span class='hl'>M</span>i<span class='hl'>N</span>nesota", abbr:"MN", explanation:"Minnesota keeps the strongest sounds M and N, so the abbreviation is MN." },
+      { key:"wi", state:"Wisconsin", revealName:"<span class='hl'>W</span><span class='hl'>I</span>sconsin", abbr:"WI", explanation:"Wisconsin keeps the first strong sounds W and I, so the abbreviation is WI." },
+      { key:"ia", state:"Iowa", revealName:"<span class='hl'>I</span>ow<span class='hl'>A</span>", abbr:"IA", explanation:"Iowa keeps the strong sounds I and A, so the abbreviation is IA." },
+      { key:"il", state:"Illinois", revealName:"<span class='hl'>I</span><span class='hl'>L</span>linois", abbr:"IL", explanation:"Illinois keeps the first strong sounds I and L, so the abbreviation is IL." },
+      { key:"mo", state:"Missouri", revealName:"<span class='hl'>M</span>iss<span class='hl'>O</span>uri", abbr:"MO", explanation:"Missouri keeps the strongest sounds M and O, so the abbreviation is MO." },
+
+      { key:"nd", state:"North Dakota", revealName:"<span class='hl'>N</span>orth <span class='hl'>D</span>akota", abbr:"ND", explanation:"North Dakota uses N from North and D from Dakota, so the abbreviation is ND." },
+      { key:"sd", state:"South Dakota", revealName:"<span class='hl'>S</span>outh <span class='hl'>D</span>akota", abbr:"SD", explanation:"South Dakota uses S from South and D from Dakota, so the abbreviation is SD." },
+      { key:"ne", state:"Nebraska", revealName:"<span class='hl'>N</span><span class='hl'>E</span>braska", abbr:"NE", explanation:"Nebraska keeps the first strong sounds N and E, so the abbreviation is NE." },
+      { key:"ks", state:"Kansas", revealName:"<span class='hl'>K</span>an<span class='hl'>S</span>a<span class='hl'>S</span>", abbr:"KS", explanation:"Kansas keeps the strongest sounds K and S, so the abbreviation is KS." },
+
+      { key:"nm", state:"New Mexico", revealName:"<span class='hl'>N</span>ew <span class='hl'>M</span>exico", abbr:"NM", explanation:"New Mexico uses N from New and M from Mexico, so the abbreviation is NM." },
+      { key:"ok", state:"Oklahoma", revealName:"<span class='hl'>O</span><span class='hl'>K</span>lahoma", abbr:"OK", explanation:"Oklahoma keeps the first strong sounds O and K, so the abbreviation is OK." },
+      { key:"tx", state:"Texas", revealName:"<span class='hl'>T</span>e<span class='hl'>X</span>as", abbr:"TX", explanation:"Texas keeps the strongest sounds T and X, so the abbreviation is TX." },
+      { key:"ar", state:"Arkansas", revealName:"<span class='hl'>A</span><span class='hl'>R</span>kansas", abbr:"AR", explanation:"Arkansas keeps the first strong sounds A and R, so the abbreviation is AR." },
+      { key:"la", state:"Louisiana", revealName:"<span class='hl'>L</span>ouisi<span class='hl'>A</span>na", abbr:"LA", explanation:"Louisiana keeps the strongest sounds L and A, so the abbreviation is LA." },
+
+      { key:"mt", state:"Montana", revealName:"<span class='hl'>M</span>on<span class='hl'>T</span>ana", abbr:"MT", explanation:"Montana keeps the strongest sounds M and T, so the abbreviation is MT." },
+      { key:"id", state:"Idaho", revealName:"<span class='hl'>I</span><span class='hl'>D</span>aho", abbr:"ID", explanation:"Idaho keeps the first strong sounds I and D, so the abbreviation is ID." },
+      { key:"wy", state:"Wyoming", revealName:"<span class='hl'>W</span><span class='hl'>Y</span>oming", abbr:"WY", explanation:"Wyoming keeps the strongest sounds W and Y, so the abbreviation is WY." },
+      { key:"ut", state:"Utah", revealName:"<span class='hl'>U</span><span class='hl'>T</span>ah", abbr:"UT", explanation:"Utah keeps the first strong sounds U and T, so the abbreviation is UT." },
+      { key:"co", state:"Colorado", revealName:"<span class='hl'>C</span><span class='hl'>O</span>lorado", abbr:"CO", explanation:"Colorado keeps the first strong sounds C and O, so the abbreviation is CO." },
+
+      { key:"wa", state:"Washington", revealName:"<span class='hl'>W</span><span class='hl'>A</span>shington", abbr:"WA", explanation:"Washington keeps the first strong sounds W and A, so the abbreviation is WA." },
+      { key:"or", state:"Oregon", revealName:"<span class='hl'>O</span><span class='hl'>R</span>egon", abbr:"OR", explanation:"Oregon keeps the first strong sounds O and R, so the abbreviation is OR." },
+      { key:"ca", state:"California", revealName:"<span class='hl'>C</span><span class='hl'>A</span>lifornia", abbr:"CA", explanation:"California keeps the first strong sounds C and A, so the abbreviation is CA." },
+      { key:"nv", state:"Nevada", revealName:"<span class='hl'>N</span>e<span class='hl'>V</span>ada", abbr:"NV", explanation:"Nevada keeps the strongest sounds N and V, so the abbreviation is NV." },
+      { key:"az", state:"Arizona", revealName:"<span class='hl'>A</span>ri<span class='hl'>Z</span>ona", abbr:"AZ", explanation:"Arizona keeps the strongest sounds A and Z, so the abbreviation is AZ." }
+    ];
+
+    const revealCard = document.getElementById("revealCard");
+    const stateImg = document.getElementById("stateImg");
+    const stateName = document.getElementById("stateName");
+    const instruction = document.getElementById("instruction");
+    const tapHint = document.getElementById("tapHint");
+    const revealBox = document.getElementById("revealBox");
+    const soundName = document.getElementById("soundName");
+    const abbrText = document.getElementById("abbrText");
+    const explanation = document.getElementById("explanation");
+
+    const backBtn = document.getElementById("backBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const metaText = document.getElementById("metaText");
+    const introNote = document.getElementById("introNote");
+
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+
+    let i = 0;
+    let revealed = false;
+
+    function setProgress(){
+      const total = CARDS.length;
+      const pos = i + 1;
+      progressText.textContent = `${pos} of ${total}`;
+      progressBar.style.width = `${(pos / total) * 100}%`;
+      metaText.textContent = `Card ${pos} of ${total}`;
+      backBtn.disabled = (i === 0);
+      nextBtn.disabled = (i === total - 1);
+    }
+
+    function setReveal(state){
+      revealed = state;
+      revealBox.classList.toggle("show", revealed);
+      tapHint.style.display = revealed ? "none" : "inline-flex";
+      revealBtn.textContent = revealed ? "Hide" : "Reveal";
+    }
+
+    function renderCard(){
+      const card = CARDS[i];
+
+      if(card.intro){
+        stateImg.src = "";
+        stateImg.alt = "";
+        stateImg.style.display = "none";
+        stateName.textContent = card.title;
+        instruction.textContent = card.instruction;
+        tapHint.textContent = card.hint;
+        soundName.innerHTML = card.revealName;
+        abbrText.textContent = card.abbr;
+        explanation.textContent = card.explanation;
+        introNote.textContent = "Kitimus says: listen for the loud sounds. The abbreviation keeps the strongest sound letters.";
+      } else {
+        stateImg.style.display = "block";
+        stateImg.src = `./images/${card.key}.png`;
+        stateImg.alt = `${card.state} image`;
+        stateName.textContent = card.state;
+        instruction.textContent = "Find the strongest sounds in the state name.";
+        tapHint.textContent = "Tap to reveal";
+        soundName.innerHTML = card.revealName;
+        abbrText.textContent = card.abbr;
+        explanation.textContent = card.explanation;
+        introNote.textContent = "Say the state name out loud, then listen for the loudest sound letters.";
+      }
+
+      setReveal(false);
+      setProgress();
+    }
+
+    function toggleReveal(){
+      setReveal(!revealed);
+    }
+
+    function next(){
+      if(i >= CARDS.length - 1) return;
+      i++;
+      renderCard();
+    }
+
+    function prev(){
+      if(i <= 0) return;
+      i--;
+      renderCard();
+    }
+
+    revealCard.addEventListener("click", toggleReveal);
+    revealCard.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        toggleReveal();
+      }
+    });
+
+    revealBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleReveal();
+    });
+
+    nextBtn.addEventListener("click", next);
+    backBtn.addEventListener("click", prev);
+
+    renderCard();
+  </script>
+</body>
+</html>
