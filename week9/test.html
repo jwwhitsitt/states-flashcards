@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Week 9 – Check Your Learning</title>
+  <title>Week 10 – Check Your Learning</title>
 
   <!-- Kitimus preload (prevents flicker) -->
   <link rel="preload" as="image" href="/mascots/kitimus/kitimus-neutral.png">
@@ -489,11 +489,11 @@
     // =========================================================
 
     const WEEK = [
-      {"state": "Montana", "abbrev": "MT", "capital": "Helena", "map": "./images/mt.png"},
-      {"state": "Idaho", "abbrev": "ID", "capital": "Boise", "map": "./images/id.png"},
-      {"state": "Wyoming", "abbrev": "WY", "capital": "Cheyenne", "map": "./images/wy.png"},
-      {"state": "Utah", "abbrev": "UT", "capital": "Salt Lake City", "map": "./images/ut.png"},
-      {"state": "Colorado", "abbrev": "CO", "capital": "Denver", "map": "./images/co.png"}
+      {"state": "Washington", "abbrev": "WA", "capital": "Olympia", "map": "./images/wa.png"},
+      {"state": "Oregon", "abbrev": "OR", "capital": "Salem", "map": "./images/or.png"},
+      {"state": "California", "abbrev": "CA", "capital": "Sacramento", "map": "./images/ca.png"},
+      {"state": "Nevada", "abbrev": "NV", "capital": "Carson City", "map": "./images/nv.png"},
+      {"state": "Arizona", "abbrev": "AZ", "capital": "Phoenix", "map": "./images/az.png"}
     ];
 
     function shuffle(arr){
@@ -507,11 +507,11 @@
 
     // 4-option spelling MC: 1 correct + 3 near-miss
     const SPELLING_FAKES = {
-      "Montana": ["Montanna", "Montena", "Montaana"],
-      "Idaho": ["Idhoo", "Idaaho", "Idahoe"],
-      "Wyoming": ["Wioming", "Wyomming", "Wyomeng"],
-      "Utah": ["Utahh", "Utahh", "Utha"],
-      "Colorado": ["Colorrado", "Colorodo", "Colarado"]
+      "Washington": ["Washinton", "Wasington", "Washingtonn"],
+      "Oregon": ["Oregan", "Oregonn", "Oregon"],
+      "California": ["Californya", "Calefornia", "Californiaa"],
+      "Nevada": ["Nevadda", "Neveda", "Nevata"],
+      "Arizona": ["Arizonia", "Arisona", "Arizonaa"]
     };
 
     const spellingQuestions = WEEK.map(s => {
